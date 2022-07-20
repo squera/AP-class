@@ -34,20 +34,22 @@ pub fn var_ass_mut(){
     println!("Value of z: {}",z);
 
     // constants must declare their types
-    const TRUE : i32 = 1;
+    const _TRUE : i32 = 1;
     // this constant is local to the function, `FALSE` is shared by all functions in this file
 
 }
-const FALSE : i32 = 0;
+const _FALSE : i32 = 0;
 // QUIZ: can i use const FALSE from `src/main.rs` ?
 
 /// This function showcases Rust base and compound types
+/// https://doc.rust-lang.org/book/ch03-02-data-types.html
 pub fn vals_types(){
     /* ==== Base Types ====
        ==================== */
     //  - Integers: usize, i32, i64
     //  - Floats: f32, f64
-    // TODO usize
+    // usize is the size of a pointer to memory in bytes (4 for 32bits archs, 8 for 64bit archs)
+    //  it gives you the guarantee to be always big enough to hold any pointer or any offset in a data structure
     let x : i32 = 10;
     let y : i64 = 20;
     // Rust does not do implicit casting, you have to explicitly cast, with `as X`
@@ -59,7 +61,7 @@ pub fn vals_types(){
     // - Booleans
     let t : bool = true;
     let f : bool = false;
-    // with the usual boolean distructor: if-then-else
+    // with the usual boolean destructor: if-then-else
     if t == f {
         println!("True is false");
     } else {
@@ -118,47 +120,25 @@ pub fn vals_types(){
 
     let trimmed = input_text.trim();
     match trimmed.parse::<u32>() {
-        Ok(i) => {
+        Ok(mut i) => {
             println!("Integer input: {}", i);
+            if i>5 {                            // comment and input 6
+                i = 5;
+            }
             let _element = a[(i as usize)];
-            println!("This will not print");
+            println!("This will not print without the if");
         }
         ,
         Err(..) => println!("this was not an integer: {}", trimmed),
     };
-
-    /* ==== Option Types ====
-       ====================== */
-    // One can create Option types in Rust, i.e., values that can be Some(X) or None,
-    // where X can be any Rust type
-    let nopt : Option<i32> = None;
-    let opt : Option<i32> = Some(3);
-    // options have a number of specific destructors and error handling methods
-    if nopt.is_none() {
-        println!("This is None");
-    }
-    // QUIZ: what will these expressions do?
-    // let v = nopt.unwrap();   // RTE: thread 'main' panicked at 'called `Option::unwrap()` on a `None` value'
-    // RTE = runtime error
-    let v = opt.unwrap();
-    println!("Some of {}",v);
-    // TODO: show .expect
-    // TODO: show .and_then
-
-    // Rust offers a number of built-in option types tha are very useful:
-    // - Result<X, Y>
-    let e: Result<i32,&str> = Err("error message");
-    let _r: Result<i32,&str> = Ok(4);
-    // Result offer much of the same things that Options do, with names tailored to
-    // the specifics of Results
-    println!("Error? {}",e.is_err());
-    println!("Ok? {}",e.is_ok());
-
-    //TODO: show documentation for Result stuff ?
-
+    // What are Ok and Err? They're instances of the Result type,
+    // which we discuss in few classes
 }
 
 /// This function showcases Rust expressions and commands
+/// See also:
+///     https://doc.rust-lang.org/book/ch03-03-how-functions-work.html
+///     https://doc.rust-lang.org/book/ch03-05-control-flow.html
 pub fn expressions(){
     // Rust has if-then and if-then-else conditionals
     // Rust has different forms of iteration
@@ -178,13 +158,18 @@ pub fn expressions(){
         c -= 1;
     }
 
-    //  - for loops
-    // TODO: a standard loop with an index
-
-    // for loops can operate on ranges, here the range is 1 to 4, including 1 and excluding 4
-    let a = [10, 20, 30, 40, 50];
-    for element in 1..4 {
-        println!("For-range loop: the value is: {}", a[element]);
+    //  - for loops, which take iterators as parameters
+    //  no i = 0, i< X , i+ notation, the parameter must be iterable, the easiest is using ranges
+    for n in 1..51 {   // or 1..=50
+        if n % 15 == 0 {
+            println!("fizzbuzz");
+        } else if n % 3 == 0 {
+            println!("fizz");
+        } else if n % 5 == 0 {
+            println!("buzz");
+        } else {
+            println!("{}", n);
+        }
     }
 
     // Rust collections can be iterated over.
@@ -193,6 +178,14 @@ pub fn expressions(){
     for element in a.iter() {
         println!("Iteration loop: the value is: {}", element);
     }
+    // iter - This borrows each element of the collection through each iteration.
+    //      Thus leaving the collection untouched and available for reuse after the loop.
+    // into_iter - This consumes the collection so that on each iteration the exact data is provided.
+    //      Once the collection has been consumed it is no
+    //      longer available for reuse as it has been 'moved' within the loop.
+    // iter_mut - This mutably borrows each element of the collection,
+    //      allowing for the collection to be modified in place.
+
 
 }
 
@@ -205,7 +198,10 @@ mod testing {
 
     // all functions marked as #[test] can be run with project testing
     #[test]
-    //TODO: how to run only the tests in CLion
+    // Ensure you can see the Cargo panel in Clion:
+    //      View -> Tool Windows -> Cargo  --> drag it where you want
+    //      Click the 'run cargo command' --> type "cargo test" to run all the tests and only them
+    //      see the change in the Run icon on the top-right icons menu
     fn test_crapadd() {
         assert_eq!(crapadd(1,3),2);
     }
@@ -227,3 +223,4 @@ pub mod testfuns{
         x+y
     }
 }
+

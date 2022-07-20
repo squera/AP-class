@@ -4,5 +4,7 @@
 // pub mod lecture02;
 pub mod c01_basic;
 pub mod c02_ownership;
-pub mod c03_structenum;
-pub mod c04_lifetimes;
+pub mod c03_enums;
+pub mod c04_structs;
+pub mod c05_lifetimes;
+mod c04_structshelper;

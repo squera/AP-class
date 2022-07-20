@@ -10,6 +10,8 @@
 
 
 /// This function showcases Rust Strings and how to use them
+/// See
+///     https://doc.rust-lang.org/std/string/struct.String.html
 pub fn strings(){
     // `str_string` has type &str, i.e., pointer to a `str`.
     // This is also called a String literal. It is hardcoded into the text of our program.
@@ -57,7 +59,11 @@ pub fn strings(){
     s.push_str(&t);
     // QUIZ: what is peculiar about the line above?
     // what is going on here? `push_str` wants a `&str`, why is passing a `&String` ok ?
-    // TODO: explain automatic dereferencing / mention and give forward pointer
+    // This is an important Rust feature called
+    //      Implicit Deref Coercion
+    // which we'll discuss later
+    // if you can't wait, see
+    //  https://doc.rust-lang.org/book/ch15-02-deref.html#implicit-deref-coercions-with-functions-and-methods
 
     // Another way of manipulating strings is with `format!`
     let r = format!("{} is real t{}lings", s0, t);
@@ -72,6 +78,8 @@ pub fn strings(){
 }
 
 /// This function showcases Rust Vec
+/// See
+///     https://doc.rust-lang.org/std/vec/struct.Vec.html
 pub fn vec(){
     // Like `array`, vector `Vec` can store a single type of values next to each other.
     // Unlike `array`, `Vec` is allocated in the heap and doesn't need to have a fixed length at compile time.
@@ -96,9 +104,9 @@ pub fn vec(){
     // QUIZ: can i do this:
     // nn = nn + n;
     // no, i need to deref `nn` first, it's a pointer!
-    // TODO: why is it ok not to deref `n`?
-    let mut nn = *nn;
-    println!("Adding stuff {}", nn = nn + n);
+    // while n gets dereferenced automatically to i32   // TODO
+    let nn = *nn;
+    println!("Adding stuff {}", nn + n);
 
     // Vec tors can be iterated with for loops, taking immutable references
     for i in &v {
@@ -114,6 +122,8 @@ pub fn vec(){
 }
 
 /// This function showcases Rust HashMap
+/// See
+///     https://doc.rust-lang.org/std/collections/struct.HashMap.html
 pub fn hashmap(){
     // A Hashmap is a collection that stores a key-value mapping
     // The type is HashMap<K,V>, which is Polymorphic in the types of keys `K` and of values `V`
@@ -138,10 +148,17 @@ pub fn hashmap(){
 }
 
 /// This function discusses various aspects of Rust ownership
+/// See
+///     https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html
 pub fn ownership(){
-    // Central to the reason why Rust has ownership is the role of Stack and Heap
-    // QUIZ: recap stack and heap from 1st year
-    // TODO: 3 questions
+    // Central to the reason why Rust has ownership is the role of Stack and Heap.
+    // let's recap stack and heap from 1st year
+    // QUIZ:
+    // 1. which one is faster to access: stack / heap
+    // 2. which one is larger: stack / heap
+    // 3. what operations do you do on a heap: push / pop / malloc / free
+    // 4. what does a typical C function push on a stack? (word cloud)
+    // TODO
 
     // Existing languages have many a problem with the management of the heap,
     // e.g., buffer overflows, data races, dangling pointers etc...
@@ -160,7 +177,7 @@ pub fn ownership(){
         // allocates s1
         let s1 = String::from("hello");
         // moves s1 into s2
-        let s2 = s1;
+        let _s2 = s1;
         // DNC: borrow of moved value: `s1`
         // let's look at the compiler output to understand what is going on
         // println!("{}", s1); // error, `s1` doesn't own the value anymore.
@@ -193,12 +210,12 @@ pub fn ownership(){
     // but are stored in a different place on the stack.
     // This is because `i32` has the `Copy` trait.
     // If a type implements the `Copy` trait, the value of the type will be copied after the assignment.
-    // TODO: hint at DEREF behaviour
+    // This also matters with Implicit Deref Coercion, and we'll talk more about this later
 
     // 2 Words on Rust Traits:
     //    A Trait is a way of saying that a type has a particular property
     //    (e.g., Copy, Move, Debug, Display, PartialEq ...)
-    // We'll discuss Traits at lenght later
+    // We'll discuss Traits at length later
 
     // What about function calls and ownership of passed parameters?
     ownership_for_functions();
@@ -229,6 +246,8 @@ fn makes_copy(some_integer: i32) { // some_integer comes into scope
 } // Here, some_integer goes out of scope. Nothing special happens.
 
 /// This function presents Rust references and Borrowing
+/// See
+///     https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html
 pub fn refs_and_borrowing(){
     // Borrowing avoids transferring ownership
     //  If we don't want a function to take ownership of our data,
@@ -300,7 +319,6 @@ pub fn refs_and_borrowing(){
     // take a look at `no_dangle`
     let string = no_dangle();
     println!("String {}",string);
-
 }
 
 /// Example function used for borrowing
@@ -329,8 +347,100 @@ fn no_dangle() -> String {
     s   // return s; // equivalent
 }
 
-
+/// This function presents Rust slicing
+/// See
+///     https://doc.rust-lang.org/book/ch04-03-slices.html
 pub fn slices(){
     // Another type that does not have ownership is the slice.
     // Slices let you reference a contiguous sequence of elements in a collection rather than the whole collection.
+
+    // slicing is done by taking the desired range with square brackets [..],
+    // the first interval is inclusive, the second is not
+
+    let s : String = String::from("hello world");
+    let _hello : &str = &s[0..5];
+    let _world : &str = &s[6..11];
+    // `s` owns the string.
+    // `world` is a reference pointing to the second word of the string.
+
+    /* Visually:
+                s                        heap stuff
+          | name     | value  |       | index | value |
+          | ptr      | ---------------> 0     | h     |
+          | length   | 11     |       | 1     | e     |
+          | capacity | 11     |       | 2     | l     |
+                                      | 3     | l     |
+                                      | 4     | o     |
+                world                 | 5     |       |
+          | ptr      | ---------------> 6     | w     |
+          | length   | 5      |       | 7     | o     |
+          | capacity | 5      |       | 8     | r     |
+                                      | 9     | l     |
+                                      | 10    | d     |
+    */
+    // these are equal
+    let _slice = &s[0..2];
+    let _slice = &s[..2];
+    // these are equal too
+    let len = s.len();
+    let _slice = &s[3..len];
+    let _slice = &s[3..];
+
+    // slicing is not limited to Strings, but it works on Array s and on Vec s too
+    let a = [1, 2, 3, 4, 5];
+    let slice = &a[1..3];
+    assert_eq!(slice, &[2, 3]);
+
+    let v = vec![1, 2, 3, 4, 5];
+    let third: &i32 = &v[2];
+    println!("The third element is {}", third);
+    match v.get(2) {
+        Some(third) => println!("The third element is {}", third),
+        None => println!("There is no third element."),
+    }
 }
+
+pub fn ownership_and_compound(){
+    // let's now take a look at ownership and vectors,
+    // to study in details how to deal with ownership and compound data types
+
+    let mut v = vec![String::from("something");10];
+    // let first_nonmut = v[0];
+    // DNC: error[E0507]: cannot move out of index of `Vec<String>`
+    // the compiler tells us something useful though:
+    //      move occurs because value has type `String`, which does not implement the `Copy` trait
+    //              help: consider borrowing here: `&v[0]`
+    let first_nonnmut = &v[0];
+    // note that this now is a &String
+    let mut first_mut = v.get_mut(0).unwrap();
+    first_mut.push_str(" else");
+    println!("First Element: {}",first_mut);
+
+    let second_nonnmut = v.get(1).unwrap();
+    // what happens if we write
+    // println!("First Element: {}",first_mut);
+    // DNC: error[E0502]: cannot borrow `v` as immutable because it is also borrowed as mutable
+    // the print of first_mut here clashes with the immutabble borrow of v done for second_nonmut
+    // instead, this is not a problem for first_nonmut
+    let third_nonmut = v.get(2).unwrap();
+    println!("Nonmut: second and third {}, {}", second_nonnmut, third_nonmut);
+    // what about the first_nonmut?
+    // same issue, the mutable access to first_mut breaks stuff
+    // println!(" First nonmut ? no {}",first_nonnmut);
+    // DNC: error[E0502]: cannot borrow `v` as mutable because it is also borrowed as immutable
+
+    // how do i get another mutable reference to a different entry in the vector?
+    // can i? element 5 and 6 do not share stuff, so we should get those 2 pointers because they
+    // do not overlap, their ownership is disjoint, the issue is that ownership goes through v ...
+    let (v05, v6plus) = v.split_at_mut(6);
+    let mut one_mut = v05.get_mut(5).unwrap();
+    let mut two_mut = v6plus.get_mut(0).unwrap();
+    // the indices ofc change now!
+    println!("5: {}, 6: {}",one_mut, two_mut);
+
+    // how to merge them back? with concat, applied to an array since
+    // arrays can concat() slices to a vector
+    let vv = [v05,v6plus].concat();
+    println!("{:?} == {:?}",v,vv);
+}
+
