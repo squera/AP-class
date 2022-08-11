@@ -91,17 +91,29 @@ struct Rectangle {
     width: u32,
     height: u32,
 }
+// TODO explanatory text
+use std::fmt;
+/// See
+///     https://doc.rust-lang.org/rust-by-example/hello/print/print_display.html
+impl fmt::Display for Square {
+    // This trait requires `fmt` with this exact signature.
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // Write strictly the first element into the supplied output
+        // stream: `f`. Returns `fmt::Result` which indicates whether the
+        // operation succeeded or failed. Note that `write!` uses syntax which
+        // is very similar to `println!`.
+        write!(f, "{}x{}", self.side,self.side)
+    }
+}
 
 pub fn struct_printing() {
-    let rect1 = Rectangle {
-        width: 30,
-        height: 50,
-    };
-
-    // struct s that derive Debug can be printed with the " :? " formatter
-    println!("rect1 is {:?}", rect1);
-
-    // TODO: derive display and implement .. ?
+    let rect = Rectangle{ width: 10, height: 20 };
+    let squa = Square{side: 10};
+    // println!("Printing a rectangle {}", rect);
+    // DNC: error[E0277]: `Rectangle` doesn't implement `std::fmt::Display`
+    // so we have to use the {:?}
+    println!("Printing a rectangle {:?}", rect);
+    println!("Printing a square {}", squa);
 }
 
 // We can also use `pub` to designate structs (and enums) as public,
@@ -133,11 +145,12 @@ pub fn _new_square() -> Square{
 // GOTO TODO
 // come back
 
+
 // TODO: impl -> ### Defining methods for Structs in lecture 3
-// TODO: lifetimes -> c5
-// TODO: traits -> c6
-// TODO: poly -> c7
-// TODO: oop -> c8
+// TODO: lifetimes -> c7
+// TODO: traits -> c8
+// TODO: poly -> c9
+// TODO: oop -> c10
 
 
 

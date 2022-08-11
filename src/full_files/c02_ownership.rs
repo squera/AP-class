@@ -46,7 +46,7 @@ pub fn strings(){
     println!("This is (not) a pointer: {}", strptr_string);
     // this does not show a pointer!
     println!("This is a pointer: {:p}", strptr_string);
-    // TODO: explain formatting and display ? or give forward refernce only ?
+    // when we see structs, we will discuss displaying with Debug and Display
 
     // Using Strings in Rust is different than in other languages
     let _s = "hell";

@@ -6,7 +6,7 @@
 // DNC: Struct `Rectangle` is private [E0603]
 
 // This code is not for this class, it is needed for class c04_structs
-use crate::c4::new_rhombus;
+use crate::c5::new_rhombus;
 use crate::full_files::c04_structs::Square;
 use crate::full_files::c04_structs::Rhombus;
 fn _showcase_access () {
