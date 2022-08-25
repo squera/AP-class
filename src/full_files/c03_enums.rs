@@ -30,7 +30,7 @@ enum IpAddr {
 pub fn enum_usage(){
     // we can create values of each type declared in the enum
     let _four = IpAddrKind::V4;
-    // TODO essentially, here we say that `_four` is a ? struct ? value ? of type V4
+    // here we say that `_four` is a value of a certain variant (V4)
     let _six = IpAddrKind::V6;
 
     let loopback = IpAddr::V6(String::from("::1"));
@@ -66,7 +66,7 @@ enum Option<T> {
 
 /// This function showcases Rust Options and how to use them
 /// See
-///     TODO
+///     https://doc.rust-lang.org/std/option/enum.Option.html
 // let's look at Option usages
 pub fn option(){
     // here we instantiate the type parameter T with i8
@@ -93,7 +93,7 @@ pub fn option(){
 
 /// This function showcases Pattern matching in Rust
 /// See
-///     TODO
+///     https://doc.rust-lang.org/book/ch18-00-patterns.html?highlight=pattern%20ma#patterns-and-matching
 pub fn patternmatching(){
     let home = IpAddr::V4(127, 0, 0, 1);
     let loopback = IpAddr::V6(String::from("::1"));
@@ -105,10 +105,14 @@ pub fn patternmatching(){
     // The power of match comes from the expressiveness of the patterns
     // and the fact that the compiler confirms that all possible cases are handled.
 
+    // QUIZ: is this ok?
     // match home {
     //     IpAddr::V4(a, b, c, d) => println!("Is V4"),
     //     IpAddr::V6(a) => println!("Is V6")
     // };
+    // Y / N
+
+
     // DNC: error[E0004]: non-exhaustive patterns: `V0` not covered
     match home {
         // matches any V4 whose first field is 127
@@ -165,7 +169,7 @@ pub fn patternmatching(){
 
 /// This function showcases Rust errors
 /// See
-///     TODO
+///     https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html
 pub fn errors() {
     // Rust groups errors into two major categories:
     //      recoverable and
@@ -240,12 +244,9 @@ pub fn errors() {
     //      Therefore, returning Result is a good default choice when you’re defining a function that might fail.
     // Panic:
     //      you deny users of your code the option to recover
-    // TODO: usecases?
 }
 
 /// This function showcases errors in Rust collections (Vec)
-/// See
-///     TODO
 pub fn collectionerrors(){
     // many Rust collections make extensive usage of Options and Results
     let num = vec![10, 20];
@@ -278,8 +279,4 @@ pub fn collectionerrors(){
     // This causes an error:
     //      thread 'main' panicked at 'index out of bounds: the len is 2 but the index is 2', src/full_files/c03_enums.rs:259:16
 }
-
-
-
-
 

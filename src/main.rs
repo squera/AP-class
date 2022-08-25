@@ -12,12 +12,12 @@ use crate::full_files::c02_ownership as c2;
 // use crate::classes::c02_ownership as c2;
 use crate::full_files::c03_enums as c3;
 // use crate::classes::c03_enums as c3;
-use crate::full_files::c05_modules as c4;
-// use crate::classes::c04_modules as c4;
-use crate::full_files::c06_testing as c5;
-use crate::classes::c05_testing as c5;
-use crate::full_files::c04_structs as c6;
+use crate::full_files::c04_structs as c4;
 // use crate::classes::c06_structs as c6;
+use crate::full_files::c05_modules as c5;
+// use crate::classes::c04_modules as c4;
+use crate::full_files::c06_testing as c6;
+// use crate::classes::c05_testing as c5;
 
 // Below is the main function.
 // Notice that CLion already knows we can run it (see the green triangle)
@@ -48,12 +48,15 @@ pub fn main() {
         c3::errors();
         c3::collectionerrors();
 
-        //
-        c4::externalcall();
+        // from c04_structs
+        c4::struct_usage();
+        c4::struct_printing();
+        c4::struct_impl();
+
+        // from c05_modules
+        c5::externalcall();
+        c5::external_registry_call();
 
         //
-
-        // from c06_structs
-        c6::struct_usage();
-        c6::struct_printing();
+        // open c06_testing
 }

@@ -59,6 +59,7 @@ pub fn strings(){
     s.push_str(&t);
     // QUIZ: what is peculiar about the line above?
     // what is going on here? `push_str` wants a `&str`, why is passing a `&String` ok ?
+
     // This is an important Rust feature called
     //      Implicit Deref Coercion
     // which we'll discuss later
@@ -104,7 +105,7 @@ pub fn vec(){
     // QUIZ: can i do this:
     // nn = nn + n;
     // no, i need to deref `nn` first, it's a pointer!
-    // while n gets dereferenced automatically to i32   // TODO
+    // while n gets dereferenced automatically to i32
     let nn = *nn;
     println!("Adding stuff {}", nn + n);
 
@@ -158,7 +159,6 @@ pub fn ownership(){
     // 2. which one is larger: stack / heap
     // 3. what operations do you do on a heap: push / pop / malloc / free
     // 4. what does a typical C function push on a stack? (word cloud)
-    // TODO
 
     // Existing languages have many a problem with the management of the heap,
     // e.g., buffer overflows, data races, dangling pointers etc...
@@ -262,6 +262,10 @@ pub fn refs_and_borrowing(){
     let len = calculate_length(&s1);
     // &s1 has type &String, which reads: pointer to String
     println!("The length of '{}' is {}.", s1, len);
+    // QUIZ: can i write through a pointer? Can i do:
+    // let len = &s1.push();
+    // Y / N
+
 
     // `&` alone doesn't give us the permission to modify the data.
     // Remember that in Rust, everything is by default **immutable**.
@@ -293,7 +297,8 @@ pub fn refs_and_borrowing(){
     //
     // This is golden
     //      You unlikely not have the expertise in security and concurrency to appreciate this
-    //      but join this information with what you learn in the next semesters / years to understand truly why Rust rocks
+    //      but join this information with what you learn in the next semesters /
+    //      years to understand truly why Rust rocks
 
     // Data Races Prevention Example
     // QUIZ: does this code compile?
@@ -405,7 +410,12 @@ pub fn ownership_and_compound(){
     // to study in details how to deal with ownership and compound data types
 
     let mut v = vec![String::from("something");10];
+    // QUIZ: can i do this:
     // let first_nonmut = v[0];
+    // let sec_nonmut = v[1];
+    // Y / N
+
+
     // DNC: error[E0507]: cannot move out of index of `Vec<String>`
     // the compiler tells us something useful though:
     //      move occurs because value has type `String`, which does not implement the `Copy` trait
@@ -417,8 +427,11 @@ pub fn ownership_and_compound(){
     println!("First Element: {}",first_mut);
 
     let second_nonnmut = v.get(1).unwrap();
-    // what happens if we write
+    // QUIZ: what happens if we write
     // println!("First Element: {}",first_mut);
+    // nothing: it works // compiler error
+
+
     // DNC: error[E0502]: cannot borrow `v` as immutable because it is also borrowed as mutable
     // the print of first_mut here clashes with the immutabble borrow of v done for second_nonmut
     // instead, this is not a problem for first_nonmut

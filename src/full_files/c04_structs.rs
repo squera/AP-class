@@ -2,8 +2,6 @@
 ///     structs
 ///     impl
 
-// TODO : add rustdoc links for impl
-
 // A struct is a custom data type that lets you name and package together multiple related values
 //  that make up a meaningful group.
 //  Each piece of data and its name is called a field, different fields can have different types
@@ -32,7 +30,7 @@ pub fn struct_usage(){
     // " user0 " is an immutable struct
     // _user0.email = String::new();
     // DNC: error[E0594]: cannot assign to `user0.email`, as `user0` is not declared as mutable
-    // the one above is im
+    // the one above is immutable too
     let mut user1 = User {
         email: String::from("someone@example.com"),
         username: String::from("someusername123"),
@@ -47,7 +45,12 @@ pub fn struct_usage(){
 
     // we can access the fields of the struct in this module because this code is defined
     // together with the struct
-    // GOTO c02_ownership, line 404 try to access the struct -> not possible
+    // QUIZ: if i go into a different file `c04_structshelper`, can i write
+    // let x = user1.email;
+    // Y / N
+
+
+    // GOTO != file and try to access the struct
 
     // shorthands
     // initialising fields from variables with the same name
@@ -91,7 +94,9 @@ struct Rectangle {
     width: u32,
     height: u32,
 }
-// TODO explanatory text
+// alternatively, you have to implement the fmt method as follows:
+// this is a way for rust to import the `fmt` module from the `std` crate
+// for now, it suffices to say this is an import, we'll look at these things in detail soon
 use std::fmt;
 /// See
 ///     https://doc.rust-lang.org/rust-by-example/hello/print/print_display.html
@@ -142,15 +147,90 @@ pub fn new_rhombus() -> Rhombus{
 pub fn _new_square() -> Square{
     return Square{ side: 0 };
 }
-// GOTO TODO
+// GOTO structshelper file
 // come back
 
+/* Struct "impl"s.
+    Rust supports object-oriented programming (OOP).
+     In OOP one defines methods in a class.
+     In Rust, this is called methods of structs,
+     which are implemented using the `impl` keyword.
+     One struct can have multiple `impl` blocks.
+ */
 
-// TODO: impl -> ### Defining methods for Structs in lecture 3
-// TODO: lifetimes -> c7
-// TODO: traits -> c8
-// TODO: poly -> c9
-// TODO: oop -> c10
+impl Rectangle {
+    /// a private function for the Rectangle struct
+    // we use `&self` instead of rectangle: `&Rectangle`
+    // because Rust knows the type of `self` is `Rectangle`
+    // due to the "impl Rectangle" above.
+    // Note that we still need to use the `&` before `self`,
+    // and this checks out with OO languages where objects are passed
+    // by reference (&) and not by copy.
+    // Methods
+    // 1) can take ownership of self,
+    //      like the 'take_ownership' method (see its signature),
+    // 2) borrow `self` immutably
+    //      as we’ve done here,
+    // 3) or borrow `self` mutably
+    //      as the function 'double' does
+    fn area(&self) -> u32 {
+        self.width * self.height
+    }
+    /// a public method
+    // methods can be public too
+    pub fn perimeter(& self) -> u32 {
+        return self.height * 2 + self.width * 2;
+    }
+    fn double(&mut self) {
+        self.width = self.width * 2;
+        self.height = self.height * 2;
+    }
+    fn take_ownership(self) {
+    }
+    // QUIZ: are these methods or functions:
+    // pub fn test1(&self) ...
+    // fn test2(&self, arg: int) ...
+    // fn test3(arg : int) ...
+}
+
+// Sometimes we want to define functions for structs.
+// The difference between a *method* and a *function* of a struct
+// is that a *function* of a struct doesn't need an instance of the struct to work with.
+impl Rectangle {
+    fn square(size: u32) -> Rectangle {
+        Rectangle {
+            width: size,
+            height: size,
+        }
+    }
+    // one often defines constructors this way
+    pub fn new() -> Rectangle {
+        Rectangle{ width: 10, height: 20 }
+    }
+    // note that there is no function overloading,
+    // so the following is not correct,
+    // you have to change the name of the function
+    // DNC: error[E0201]: duplicate definitions with name `new`:
+    // pub fn new( width : u32, height : u32) -> Rectangle {
+    //     Rectangle{ width, height }
+    // }
+    pub fn new_with_params( width : u32, height : u32) -> Rectangle {
+        Rectangle{ width, height }
+    }
+}
+
+pub fn struct_impl(){
+    // this is how functions of a struct are called, i.e., with  ::
+    let r = Rectangle::new();
+    // this is how methods are called
+    // note that the `&self` parameter is written in dot notation
+    let a = r.area();
+    // they can also be written in infix form, but this is strongly discouraged
+    let p = Rectangle::perimeter(&r);
+    println!("The Rectangle is {:?}",r);
+    println!("Area: {} and Perimeter: {}", a, p);
+}
+
 
 
 

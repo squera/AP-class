@@ -6,9 +6,11 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# local library import
-libtest = { path = "../libtest" }
-# no need to include "libleaf"
+# local library import, with local path
+libtest = { path = "../libtest" } # no need to include "libleaf"
+
+# library import from kellnr
+kellnrtest = { version = "0.1.1", registry = "kellnr"}
 
 # web library import via `crates.io`
 rand = "0.8.4"

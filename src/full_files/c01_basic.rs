@@ -185,8 +185,6 @@ pub fn expressions(){
     //      longer available for reuse as it has been 'moved' within the loop.
     // iter_mut - This mutably borrows each element of the collection,
     //      allowing for the collection to be modified in place.
-
-
 }
 
 /// This module is used to show Rust's testing infrastructure
@@ -213,7 +211,7 @@ mod testing {
 /// This is an example public module used by the testing module above
 // this is a public, inner module
 pub mod testfuns{
-    // the body of this function contains a statement, which needs
+    // the body of this function contains a statement, which needs a ';'
     pub fn crapadd(x: i32,_y: i32) -> i32 {
         return x+x;
     }
