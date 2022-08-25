@@ -72,6 +72,7 @@ Paths:
     under
         dependencies
     it has 3 kinds of dependencies:
+    // QUIZ: what are they?
         a local package
         a crates io package
         a local registry (kellnr, hosted by the uni) package
