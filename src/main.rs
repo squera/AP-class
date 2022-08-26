@@ -19,6 +19,9 @@ use crate::full_files::c05_modules as c5;
 use crate::full_files::c06_testing as c6;
 // use crate::classes::c06_testing as c6;
 use crate::full_files::c09_traits as c9;
+// use crate::classes::c09_traits as c9;
+use crate::full_files::c10_OOP as c10;
+// use crate::classes::c10_OOP as c10;
 
 // Below is the main function.
 // Notice that CLion already knows we can run it (see the green triangle)
@@ -67,11 +70,12 @@ pub fn main() {
         c9::struct_generic();
         c9::generics_example();
         c9::traitexample();
-        // c9::notify_fn();
-        // c9::notify_bound();
-        // c9::notify_fn2();
-        // c9::notify_bound2();
+        c9::example_notify();
         c9::animals_example();
         c9::example_supertraits();
 
+        // c10_oop
+        c10::example_oop1();
+        c10::example_animals_oop();
+        c10::example_multiple_traits();
 }

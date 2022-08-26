@@ -266,7 +266,7 @@ pub fn traitexample(){
 // to tell rust this function can take multiple type.
 // For example, if we want to write a function that takes a struct that implement the `Summary` trait as the input, we can say
 
-pub fn notify_fn(item: &impl Summary) {
+fn notify_fn(item: &impl Summary) {
     println!("Breaking news! {}", item.summarize());
 }
 
@@ -274,19 +274,40 @@ pub fn notify_fn(item: &impl Summary) {
 // which is called a trait bound.
 // Trait bound is a way to set a bound for the types that can be used in functions or methods.
 
-pub fn notify_bound<T: Summary>(item: &T) {
-    println!("Breaking news! {}", item.summarize());
+fn notify_bound<T: Summary>(item: &T) {
+    println!("More Breaking news! {}", item.summarize());
 }
 // let's import 2 commonly used traits first
-use std::fmt::{Debug, Display};
+use std::fmt::{Debug, Display, Formatter};
 
 // The trait bound syntax can express more complexity in other cases.
 // For example, we can have two parameters that implement `Summary`.
 // Using the `impl Trait` syntax looks like this, where
 // we can also specify more than one trait bound using the `+` syntax.
 
-pub fn notify_fn2(item1: &(impl Summary + Display), item2: &(impl Summary + Display)) {}
-pub fn notify_bound2<T: Summary + Display>(item1: &T, item2: &T) {}
+fn notify_fn2(item1: &(impl Summary + Display), item2: &(impl Summary + Display)) {}
+fn notify_bound2<T: Summary + Display>(item1: &T, item2: &T) {}
+
+pub fn example_notify(){
+    let t = Tweet{
+        username: "Marco".to_string(),
+        content: "no way jose".to_string(),
+        reply: false,
+        retweet: false
+    };
+    notify_fn(&t);
+    notify_bound(&t);
+    // DNC: error[E0277]: `Tweet` doesn't implement `std::fmt::Display`
+    notify_fn2(&t, &t);
+    notify_bound2(&t, &t);
+}
+
+impl Display for Tweet {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        format!("");
+        Ok(())
+    }
+}
 
 // If you have really fancy trait bounds for your types,
 // you function signature will be very very long. T
