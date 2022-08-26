@@ -13,11 +13,12 @@ use crate::full_files::c02_ownership as c2;
 use crate::full_files::c03_enums as c3;
 // use crate::classes::c03_enums as c3;
 use crate::full_files::c04_structs as c4;
-// use crate::classes::c06_structs as c6;
+// use crate::classes::c04_structs as c4;
 use crate::full_files::c05_modules as c5;
-// use crate::classes::c04_modules as c4;
+// use crate::classes::c05_modules as c5;
 use crate::full_files::c06_testing as c6;
-// use crate::classes::c05_testing as c5;
+// use crate::classes::c06_testing as c6;
+use crate::full_files::c09_traits as c9;
 
 // Below is the main function.
 // Notice that CLion already knows we can run it (see the green triangle)
@@ -57,6 +58,20 @@ pub fn main() {
         c5::externalcall();
         c5::external_registry_call();
 
-        //
         // open c06_testing
+        // open c07_project
+
+        // open c08_lifetimes
+
+        // c09_traitspoly
+        c9::struct_generic();
+        c9::generics_example();
+        c9::traitexample();
+        // c9::notify_fn();
+        // c9::notify_bound();
+        // c9::notify_fn2();
+        // c9::notify_bound2();
+        c9::animals_example();
+        c9::example_supertraits();
+
 }
