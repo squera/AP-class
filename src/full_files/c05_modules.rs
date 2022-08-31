@@ -1,17 +1,17 @@
-/* See
-        https://doc.rust-lang.org/book/ch07-00-managing-growing-projects-with-packages-crates-and-modules.html
-
-    As you write large programs, organizing your code will be important.
-    As a project grows, you can organize code by splitting it into multiple modules and then multiple files.
-    A package can contain multiple binary crates and optionally one library crate.
-    Rust has a number of features that allow you to manage your code’s organization, including which details are exposed,
-    which details are private, and what names are in each scope in your programs.
-    These features, sometimes collectively referred to as the module system, include:
-        Crates
-        Packages
-        Modules
-        Paths
-
+/// See
+///     https://doc.rust-lang.org/book/ch07-00-managing-growing-projects-with-packages-crates-and-modules.html
+///
+/// As you write large programs, organizing your code will be important.
+/// As a project grows, you can organize code by splitting it into multiple modules and then multiple files.
+/// A package can contain multiple binary crates and optionally one library crate.
+/// Rust has a number of features that allow you to manage your code’s organization, including which details are exposed,
+/// which details are private, and what names are in each scope in your programs.
+/// These features, sometimes collectively referred to as the module system, include:
+///     Crates
+///     Packages
+///      Modules
+///     Paths
+/*
 Crates:
     A crate is the smallest amount of code that the Rust compiler considers at a time.
     Crates can contain modules, and the modules may be defined in other files that get compiled with the crate, as we’ll see in the coming sections.

@@ -7,6 +7,7 @@
 ///     commands
 /// Then it shows a tiny bit of the Rust
 ///     testing infrastructure
+// do not care about this line
 use std::io;
 
 /// This function shows Rust variables, assignment and mutability

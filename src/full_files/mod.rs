@@ -12,3 +12,4 @@ pub mod c06_testing;
 pub mod c08_lifetimes;
 pub mod c09_traits;
 pub mod c10_OOP;
+pub mod c11_heap;

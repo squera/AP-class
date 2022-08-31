@@ -3,14 +3,10 @@
 /// Some resources:
 ///     https://doc.rust-lang.org/book/ch17-00-oop.html
 ///     https://stevedonovan.github.io/rust-gentle-intro/object-orientation.html
-
-/* ===== OOP in Rust =======
-   ====================== */
-/* OOP languages share certain common characteristics, namely
-    1 objects,
-    2 encapsulation, and
-    3 inheritance.
- */
+/// OOP languages share certain common characteristics, namely
+///     1 objects,
+///     2 encapsulation, and
+///     3 inheritance.
 
 /* ======= Objects =========
    ====================== */

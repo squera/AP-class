@@ -22,6 +22,8 @@ use crate::full_files::c09_traits as c9;
 // use crate::classes::c09_traits as c9;
 use crate::full_files::c10_OOP as c10;
 // use crate::classes::c10_OOP as c10;
+use crate::full_files::c11_heap as c11;
+// use crate::classes::c11_heap as c11;
 
 // Below is the main function.
 // Notice that CLion already knows we can run it (see the green triangle)
@@ -45,7 +47,7 @@ pub fn main() {
         c2::slices();
         c2::ownership_and_compound();
 
-        // from c03_optionerrorpattern
+        // from c03_enums
         c3::enum_usage();
         c3::option();
         c3::patternmatching();
@@ -62,6 +64,7 @@ pub fn main() {
         c5::external_registry_call();
 
         // open c06_testing
+
         // open c07_project
 
         // open c08_lifetimes
@@ -78,4 +81,18 @@ pub fn main() {
         c10::example_oop1();
         c10::example_animals_oop();
         c10::example_multiple_traits();
+
+        // c11_heap
+        c11::example_box();
+        c11::example_box_long();
+        c11::recursivetypes();
+        c11::example_smart1();
+        c11::example_drop();
+        c11::example_rc();
+        c11::implitictderef();
+        c11::arc();
+        c11::graphexample();
+
+        c11::cellexamplee();
+        c11::rcwithcellexample();
 }
