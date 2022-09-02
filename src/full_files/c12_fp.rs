@@ -302,12 +302,11 @@ pub mod closures{
     pub fn fprules() {
         println!("Find the sum of all the squared odd numbers under 1000");
         let upper = 1000;
-        // TODO: what's 0.. ?
 
         // Imperative approach
         // Declare accumulator variable
         let mut acc = 0;
-        // Iterate: 0, 1, 2, ... to infinity
+        // Iterate: 0, 1, 2, ... to infinity, but there's a break in the loop below for a threshold
         for n in 0.. {
             // Square the number
             let n_squared = n * n;
@@ -324,10 +323,16 @@ pub mod closures{
 
         // Functional approach
         let sum_of_squared_odd_numbers: u32 =
-            (0..).map(|n| n * n)                             // All natural numbers squared
-                .take_while(|&n_squared| n_squared < upper) // Below upper limit
-                .filter(|&n_squared| is_odd(n_squared))     // That are odd
-                .fold(0, |acc, n_squared| acc + n_squared); // Sum them
+            // again, from 0 to infinity
+            (0..).
+                // All natural numbers squared
+                map(|n| n * n)
+                // Below upper limit: stop when reaching over upper
+                .take_while(|&n_squared| n_squared < upper)
+                // keep only those that are odd
+                .filter(|&n_squared| is_odd(n_squared))
+                // Sum them
+                .fold(0, |acc, n_squared| acc + n_squared);
         println!("functional style: {}", sum_of_squared_odd_numbers);
     }
 
@@ -603,12 +608,22 @@ pub mod iterators{
     // we can use various other methods associated with the iterator trait.
     //
     pub fn using_other_iterator_trait_methods() {
+        // QUIZ: 6 groups: read up
+        //      skip , zip , map , filter , sum
+        // 5 groups explain what each thing does to its input and thus their output
+        // 1 group tells the final result
         let sum: u32 = Counter::new()
-            .zip(Counter::new().skip(1))// TODO explain zip
+            // zip is an iterator that iterates over 2 other iterators, in this case
+            //      Counter::new   and  Counter::new().skip
+            .zip(Counter::new().skip(1))
+            // multiply each element of the 2 iterators
+            // 0*1 | 1*2 | 2*3 | 3*4 | 4 * 5
+            // 0 | 2 | 6 | 12 | 20
             .map(|(a, b)| a * b)
+            // keep only those numbers in that can be divided by 3
             .filter(|x| x % 3 == 0)
+            // add all the numbers
             .sum();
-        // QUIZ: what does sum contain?
         assert_eq!(18, sum);
     }
 

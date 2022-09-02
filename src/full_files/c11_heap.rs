@@ -554,7 +554,7 @@ use std::cell::RefCell;
 pub trait Messenger {
     fn send(&self, msg: &str);
 }
-// TODO explain
+// we need to specify both the lifetime and the type of the messenger field
 pub struct LimitTracker<'a, T: Messenger> {
     messenger: &'a T,
     value: usize,
@@ -562,7 +562,6 @@ pub struct LimitTracker<'a, T: Messenger> {
 }
 
 impl<'a, T> LimitTracker<'a, T>  where T: Messenger, {
-
     pub fn new(messenger: &T, max: usize) -> LimitTracker<T> {
         LimitTracker {
             messenger,
@@ -781,7 +780,6 @@ pub mod rc_plus_refcell {
     // The runtime checks of the borrowing rules protect us from data races,
     // and it’s sometimes worth trading a bit of speed for this flexibility in our data structures.
 }
-// TODO add quiz above
 
 /* === Reference cycles ====
    ========================= */
@@ -874,9 +872,9 @@ pub mod overflow {
 struct Graph<T> {
     nodes: Vec<Node<T>>,
 }
+
 // Each node has an inner value and a list of adjacent nodes it is connected to
 // (through a directed edge).
-//TODO: what's with NODE and _NODE ?
 struct Node<T>(NodeRef<T>);
 // The private representation of a node.
 struct _Node<T> {
@@ -975,11 +973,12 @@ pub fn cellexamplee() {
     let cell = Cell::new(1);
     let new_value = cell.get() + 10;
     println!("cell value : {}", cell.get());
+    // foo is going to do stuff with the cell
     foo(&cell);
     println!("cell value : {}", cell.get());
     cell.set(new_value);
-    // oops, we clobbered the work done by foo, now it'll contain 11!
-    // TODO explain better what's what
+    // but we can still change its contents afterwards
+    // QUIZ: what will this print?
     println!("cell value : {}", cell.get());
 }
 // In contrast, a RefCell requires you to call borrow or borrow_mut
@@ -993,7 +992,6 @@ struct NaiveRcWithCell<T> {
     inner_value: T,
     references: Cell<usize>,
 }
-//TODO quiz here?
 
 // implement its creation
 impl<T> NaiveRcWithCell<T> {
