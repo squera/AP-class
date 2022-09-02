@@ -24,6 +24,8 @@ use crate::full_files::c10_OOP as c10;
 // use crate::classes::c10_OOP as c10;
 use crate::full_files::c11_heap as c11;
 // use crate::classes::c11_heap as c11;
+use crate::full_files::c12_fp as c12;
+// use crate::classes::c12_fp as c12;
 
 // Below is the main function.
 // Notice that CLion already knows we can run it (see the green triangle)
@@ -91,8 +93,24 @@ pub fn main() {
         c11::example_rc();
         c11::implitictderef();
         c11::arc();
+        c11::tests::it_sends_an_over_75_percent_warning_message();
+        c11::workingtests::it_sends_an_over_75_percent_warning_message();
+        c11::rc_plus_refcell::examplepcrefcell();
+        c11::overflow::exampleoverflow();
         c11::graphexample();
-
         c11::cellexamplee();
         c11::rcwithcellexample();
+
+        // c12_fp
+        c12::closures::closuresexample();
+        c12::closures::capturingexample();
+        c12::closures::fntypes();
+        c12::closures::closures_output();
+        c12::closures::fprules();
+        c12::iterators::iteratorexample();
+        c12::iterators::filters_by_size();
+        c12::iterators::examplefpiterators();
+        c12::iterators::calling_next_directly();
+        c12::iterators::using_other_iterator_trait_methods();
+
 }

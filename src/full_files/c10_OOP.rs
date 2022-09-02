@@ -113,8 +113,8 @@ impl AveragedCollection {
 // For subtyping, we'd need to add some form of Dynamic Dispatch to Rust,
 // which is possible with
 //      Trait Objects
+// which, technically, is an object
 
-// TODO: is a trait object a type, or an object
 // A trait object `&dyn Trait` (for some Trait) points to both
 //      an instance of a **pointer type** implementing our specified trait
 //      as well as a table used to look up trait methods on that type at runtime.
