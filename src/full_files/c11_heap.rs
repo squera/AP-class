@@ -159,7 +159,7 @@ enum List {
     Nil,
 }
 // Then we can create our list as shown below.
-use crate::c11::List::{Cons,Nil};
+use self::List::{Cons,Nil};
 pub fn recursivetypes(){
     // let list = Cons(1, Cons(2, Cons(3, Nil)));
     let list = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
@@ -329,7 +329,7 @@ pub fn example_rc(){
 }
 
 use std::rc::Rc;
-use crate::c11::RcList::{RcCons,RcNil};
+use self::RcList::{RcCons,RcNil};
 
 enum RcList {
     RcCons(i32, Rc<RcList>),
@@ -749,7 +749,7 @@ pub mod rc_plus_refcell {
 
     use std::cell::RefCell;
     use std::rc::Rc;
-    use crate::c11::rc_plus_refcell::List::{Cons,Nil};
+    use self::List::{Cons,Nil};
 
     pub fn examplepcrefcell() {
         // Here we create a value that is an instance of `Rc<RefCell<i32>>`
@@ -796,7 +796,7 @@ pub mod rc_plus_refcell {
 pub mod overflow {
     use std::cell::RefCell;
     use std::rc::Rc;
-    use crate::c11::overflow::List::{Cons, Nil};
+    use self::List::{Cons, Nil};
 
     #[derive(Debug)]
     enum List {

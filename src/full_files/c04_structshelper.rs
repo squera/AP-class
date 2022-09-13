@@ -6,14 +6,13 @@
 // DNC: Struct `Rectangle` is private [E0603]
 
 // This code is not for this class, it is needed for class c04_structs
-use crate::c4::new_rhombus;
+use crate::full_files::c04_structs::new_rhombus;
 use crate::full_files::c04_structs::Square;
 use crate::full_files::c04_structs::Rhombus;
 fn _showcase_access () {
     // QUIZ: can i write the following:
     // let rr = Rhombus{ side: 0, acute_angle: 0 };
     // Y/N
-
 
     // DNC: error[E0451]: field `acute_angle` of struct `Rhombus` is private
 
