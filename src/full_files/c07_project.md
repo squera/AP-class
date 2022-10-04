@@ -4,7 +4,7 @@ This document describes the class project.
 
 From a high-level perspective,
 you have to program a trader bot that reads data
-from multiple currency markets and performs basic trading
+from multiple goods markets and performs basic trading
 on them following a trading strategy that you have to
 implement. The bot displays its strategy and its actions
 on the markets, reporting its earnings and its losses.
@@ -15,9 +15,9 @@ run your code with their market instances.
 To ensure each group's trader can interact with each group's
 market, we need to set up a Market Protocol (MP), which
 defines all operations that can be done on markets and on
-their currencies (called goods in the Market Protocol).
+their goods.
 We provide a **faulty** definition of the specs of the protocol
-that you  have to fix, following the process of a W3C-like
+that you have to fix, following the process of a W3C-like
 organisation (described below).
 
 This document contains the following information
@@ -29,14 +29,16 @@ This document contains the following information
 
 The faulty Market Protocol is described in a separate file.
 
+For simplicity, the goods the markets will be dealing with
+are currencies: euros, dollars, yens, etc.
 
 +++ Project Components
 ====================================================================
 There are some key components of the project that
 each group must implement.
-1. one currency market
-2. one trader bot with its own strategy
-4. one trader history visualiser
+1. one goods market
+2. one trader bot with its own strategies
+3. one trader history visualiser
    We now describe them in more detail and follow up with a
    description of how they will be evaluated.
 
@@ -44,7 +46,7 @@ each group must implement.
 --------------------------------------------------------------------
 Each group is named after a single market (e.g., Milano,
 New York, Amsterdam, Tokyo, Singapore ...).
-Each group implements a single currency market with their name.
+Each group implements a single good market with their name.
 Details of the behaviour of the market are in the Market
 Protocol file.
 
@@ -53,19 +55,34 @@ Protocol file.
 The bot must interact with at least 3 markets, buying and
 selling goods according to a strategy. It must also record
 all of its transactions in order for them to be displayed.
+You can implement multiple strategies.
+Different strategies include: randomly selecting a market and a good,
+always choosing the lowest-priced good on any market, trading
+one good from one market where its cost is low to the next maket
+where its cost is high, etc.
 
 ++++ Strategy Displayer
 --------------------------------------------------------------------
 The trader must log its actions accurately and record
 them in written form.
-A .txt describing the log is the bare minimum, a .pdf or
-a more complex displayer is recommended.
+A .txt describing the log is the bare minimum, a .pdf, a web
+interface or a more complex displayer is recommended.
 
 ++++ Evaluation
 --------------------------------------------------------------------
 The project is evaluated on different aspects:
-correctness, functionality with more or less markets,
-fancyness of strategy, fancyness of logging.
+correctness, functionality with more or less markets, strategy
+complexity, and logging options.
+
+The working group is evaluated as reported below.
+
+++++++ Individual contributions
+--------------------------------------------------------------------
+Each group member is expected to implement one strategy or one
+visualization strategy **on their own**. These functionalities must
+be integrated in the group project. Each member will be asked
+questions about their own individual contributions during the exam.
+
 
 
 +++ W3C-like Working Groups
@@ -89,6 +106,10 @@ them and reach a consensus of what the protocol must do and how.
 The WG is registered in piazza, the list of all WG members
 is listed in a pinned post.
 
+Should there be many groups (read, more than 24), we'll split the
+class into 2 WGs, each with the same structure, and each group will
+belong to one WG, contributing to one spec only.
+
 ++++ Working Group Leaders (WGL)
 --------------------------------------------------------------------
 Each group elects its leader, who will represent the group
@@ -103,7 +124,7 @@ version of the protocol and to submit the shared code to the
 repo. Despite the fact that they come from a group, they must
 act super-partes.
 This role requires some extra work and this is reflected
-in the grading with a bonus the total result.
+in the grading with a bonus to the total result.
 
 ++++ Working Group Process
 --------------------------------------------------------------------
@@ -113,8 +134,8 @@ and discovers faults in the specifications.
 By calling out WG meetings, faults in the specifications are
 corrected with suggestions from each group.
 Also, as you will see, there are some shared functionalities
-(goods, i.e., currencies) whose implementation also needs to
-be provided for all groups' markets to use.
+(goods) whose implementation also needs to be provided for all
+groups' markets to use.
 The WG must also rule how these functionalities are coded.
 
 The WG is advised to meet regularly and meet frequently, at
@@ -142,6 +163,27 @@ evaluation of the WGL and of the WGC. However, you have
 all the time and capabilities to reach a stable protocol
 in time, so that no unfreezing is necessary.
 
+++++ WG Evaluation
+--------------------------------------------------------------------
+The WG is expected to work in good faith. Failure to do so (for
+example by providing specs that are nonsensical or clearly flawed)
+will incur significant penalties in the final score.
+
+++++ Tips on running the WG
+--------------------------------------------------------------------
+There can be different ways for the WG to be effective. Some
+examples include trying to misuse the spec and see what bad
+interactions can happen (e.g., the market deadlock mentioned in
+the protocol). State diagrams can also be effective at understanding
+what is supposed to happen when different functionalities of the
+protocol interact with each other.
+
+++++ Group Issues
+--------------------------------------------------------------------
+Should any serious issues arise within one group, you're more than
+welcome to send me an email to discuss the matter. If any such
+issue arise, act early, don't let time pass.
+
 
 +++ Sharing Code
 ====================================================================
@@ -149,15 +191,56 @@ As mentioned, each group's traders need to use markets from
 other groups too.
 The logical connection between each group's trader and the
 markets is what the market protocol is there for.
-However, this kind of interacation also requires some
+However, this kind of interaction also requires some
 technical set up which is described here.
 Furthermore, here we also describe how the usage of other
 group's markets is regulated between all groups.
 
 ++++ Class Code Repository
 --------------------------------------------------------------------
-TODO: describe code repo
-TODO: git-like?
+Each group's market, plus any shared code will be hosted on the
+class registry, available at:
+http://advancedprogramming.disi.unitn.it/
+We will register your personal access token for pushing and pulling
+crates from the registry.
+We will register your group with the access tokens of all its
+members in order for you to push and pull group code
+e.g., the markets.
+
+You need to add a file to your project in
+.cargo/config.toml
+with the following lines:
+```
+[registries]
+kellnr = { index = "git://advancedprogramming.disi.unitn.it/index", 
+token = "put your token here between quotes"}
+```
+
+You can then edit the file
+Cargo.toml
+and include lines such as these:
+```
+[dependencies]
+kellnrtest = { version = "0.1.1", registry = "kellnr"}
+```
+where instead of `kellnrtest`, you import your colleagues' markets.
+
+In order to push your market, you need to edit the file
+Cargo.toml
+and include lines such as these
+```
+[package]
+name = " your market name"
+version = "0.1.2"
+edition = "2022"
+authors = ["your names"]
+publish = ["kellnr"]	
+#do not modify the "publish" key, this is the name of the registry
+# as read from the ".cargo/config.toml" file
+```
+
+Each group's market is called like the group, so they are
+guaranteed to be disjoint (in the repo) by their group name.
 
 ++++ Software Faire
 --------------------------------------------------------------------
@@ -197,9 +280,7 @@ Specifically:
 - the protocol is frozen                    (max) 21st class
 - the market fair happens                         23rd class
 - the commitments are registered                  23rd class
-- the exam happens                     
-  TODO: dates. Do not clash with popl week.
-  Do wed or thu ?
+- the exam happens
 
 The MP protocol is not released sooner because it would make
 little sense, since it talks about technical Rust notions
@@ -216,7 +297,7 @@ Each timeslot is 45 minutes, which include
 30 minutes for showcase and questions
 5 minutes to exit
 5 minutes for me to write an evaluation
-The examination is held in my office:
+The examination is held in my office: Povo2, 124
 
 Failure to show up to a booked slot, without proper and sound notice
 is ground for terrible punishment.
