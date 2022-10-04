@@ -54,7 +54,7 @@ pub fn strings(){
     // this is **NOT** a String, it's a &str
     let s0 = "hell".to_string();
     // this is a String, but it is not mutable, as we are used to
-    // s.push("o world") // this does not typecheck
+    // s0.push("o world"); // this does not typecheck
 
     let mut s = "hell".to_string();
     let t = String::from("o world");
@@ -168,11 +168,13 @@ pub fn ownership(){
     /* ========== Rust's Ownership Rules ==========
         - Each value in Rust has one **owner**
         - There can only be **one owner** at a time for each value
-        - When the owner goes out of scope (when the *lifetime* is over), the value will be dropped (deallocated, freed).
+        - When the owner goes out of scope (when the *lifetime* is over),
+            the value will be dropped (deallocated, freed).
 
         Why?
         - Each piece of memory has its owner. No data race!
-        - When the owner gets dropped, the piece of memory will be freed. No dangling pointers!
+        - When the owner gets dropped, the piece of memory will be freed.
+        No dangling pointers!
     */
     // these curly braces introduce a new scope block
     {
@@ -197,7 +199,8 @@ pub fn ownership(){
     // cloning
     {
         let s1 = String::from("hello");
-        // If we really want to keep `s1` and `s2` at the same time, we can `clone` it explicitly:
+        // If we really want to keep `s1` and `s2` at the same time,
+        // we can `clone` it explicitly:
         let s2 = s1.clone();
 
         println!("s1 = {}, s2 = {}", s1, s2);
@@ -229,7 +232,7 @@ fn ownership_for_functions() {
     // s comes into scope, in the heap
     let s = String::from("hello");
     // s's value moves into the function `takes_ownership`
-    takes_ownership(s);
+    takes_ownership(s );
     // ... and so is no longer valid here
     // x comes into scope, on the stack
     let x = 5;
@@ -256,7 +259,7 @@ pub fn refs_and_borrowing(){
     //  we can pass a reference to the function, creating an explicit, non-owning pointer
     //  by making a reference is called `borrowing` in rust.
 
-    // Refernces are done with `&` ampersand operator.
+    // References are done with `&` ampersand operator.
     // The opposite of referencing by using `&` is dereferencing, which is accomplished with `*`.
 
     let s1 = String::from("hello");
@@ -282,9 +285,14 @@ pub fn refs_and_borrowing(){
     let mut s = String::from("hello");
 
     let r1 = &mut s;
+    // let r2 = &mut s;
     let r2 = "asd";
-    // let r2 = &mut s; // DNC cannot borrow `s` as mutable more than once at a time
     println!("r1 and r2: {} and {}", r1, r2);
+
+
+
+    //
+    // DNC cannot borrow `s` as mutable more than once at a time
     // cannot have multiple mutable reference!
 
     // Why do we have:
@@ -306,9 +314,12 @@ pub fn refs_and_borrowing(){
     // QUIZ: does this code compile?
     let r1 = &s;
     let r2 = &s;
+    // let r3 = &mut s;
     let r3 = "asd";
-    // let r3 = &mut s; //DNC: cannot borrow `s` as mutable because it is also borrowed as immutable
     println!("r1 and r2 and r3: {} and {} and {}", r1, r2, r3);
+
+    //
+    //DNC: cannot borrow `s` as mutable because it is also borrowed as immutable
 
     // Temporal memory safety includes: no dangling references (dangling pointers) and no use-after free
     //  Dangling References
@@ -320,7 +331,7 @@ pub fn refs_and_borrowing(){
     // because Rust compiler will make sure that if you have a reference to some data,
     // the data will not go out of scope before the reference to the data does.
 
-    // take a look at `dangle`
+    // take a look at `dangle`, uncomment this line
     // let reference_to_nothing = dangle();
 
     // take a look at `no_dangle`
@@ -332,12 +343,14 @@ pub fn refs_and_borrowing(){
 fn calculate_length(s: &String) -> usize {
     s.len()
 }
+
 /// Example function used for borrowing
 fn change(some_string: &mut String) {
     some_string.push_str(", world");
 }
+
 /// Example function used for references
-// fn dangle() -> &String {
+// fn dangle() -> &'static String {
 //     // This function cannot return because the variable s is dropped at the end of the function.
 //     let s = String::from("hello");
 //     &s
@@ -345,6 +358,7 @@ fn change(some_string: &mut String) {
 //     // (and there is no lifetime specifier that can make this compile,
 //     // also we'll discuss lifetime in detail later)
 // }
+
 /// Example function used for references
 fn no_dangle() -> String {
     // This function can return (even if it does not use the `return` keyword, it is returning `s`),
@@ -395,10 +409,12 @@ pub fn slices(){
 
     // slicing is not limited to Strings, but it works on Array s and on Vec s too
     let a = [1, 2, 3, 4, 5];
+    // let slice1 = &a[0..7];
     let slice = &a[1..3];
     assert_eq!(slice, &[2, 3]);
 
     let v = vec![1, 2, 3, 4, 5];
+    let v = &v[1..4];
     let third: &i32 = &v[2];
     println!("The third element is {}", third);
     match v.get(2) {
@@ -417,15 +433,17 @@ pub fn ownership_and_compound(){
     // let sec_nonmut = v[1];
     // Y / N
 
+
     // DNC: error[E0507]: cannot move out of index of `Vec<String>`
     // the compiler tells us something useful though:
     //      move occurs because value has type `String`, which does not implement the `Copy` trait
     //              help: consider borrowing here: `&v[0]`
     let first_nonnmut = &v[0];
     // note that this now is a &String
+
     let mut first_mut = v.get_mut(0).unwrap();
     first_mut.push_str(" else");
-    println!("First Element: {}",first_mut);
+    // println!("First Element: {}",first_mut);
 
     let second_nonnmut = v.get(1).unwrap();
     // QUIZ: what happens if we write
@@ -456,24 +474,4 @@ pub fn ownership_and_compound(){
     // arrays can concat() slices to a vector
     let vv = [v05,v6plus].concat();
     println!("{:?} == {:?}",v,vv);
-}
-
-
-
-pub fn testvec(){
-    let mut v = vec![5];
-    v.push(6);
-
-    let sixindex = findinv(&v);
-    v.push(9);
-}
-fn findinv(v : &Vec<i32>) -> i32 {
-    let mut counter =0;
-    for x in v.iter() {
-        if *x == 6{
-            return counter;
-        }
-        counter+=1;
-    }
-    return -1;
 }

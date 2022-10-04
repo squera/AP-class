@@ -11,10 +11,10 @@ mod classes;
 use crate::classes as basedir;
 
 use basedir::c01_basic as c1;
-// use basedir::c02_ownership as c2;
-// use basedir::c03_enums as c3;
-// use basedir::c04_structs as c4;
-// use basedir::c05_modules as c5;
+use basedir::c02_ownership as c2;
+use basedir::c03_enums as c3;
+use basedir::c04_structs as c4;
+use basedir::c05_modules as c5;
 // use basedir::c06_testing as c6;
 // use basedir::c09_traits as c9;
 // use basedir::c10_OOP as c10;
@@ -29,31 +29,37 @@ use basedir::c01_basic as c1;
 //      if one writes no modifier => private, only callable from this file
 pub fn main() {
 
-        // from c01_basic
-        c1::var_ass_mut();
+        // // // from c01_basic
+        // c1::var_ass_mut();
         // c1::vals_types();
         // c1::expressions();
         //
         // // from c02_ownership
-        // c2::strings();
-        // c2::vec();
-        // c2::hashmap();
+        // c2::sc02_ownership.rsashmap();
         // c2::ownership();
         // c2::refs_and_borrowing();
         // c2::slices();
         // c2::ownership_and_compound();
-        //
+        //s
         // // from c03_enums
         // c3::enum_usage();
         // c3::option();
         // c3::patternmatching();
         // c3::errors();
-        // c3::collectionerrors();
         //
         // // from c04_structs
         // c4::struct_usage();
         // c4::struct_printing();
         // c4::struct_impl();
+
+
+        c3::testqm();
+        let r = c3::readfilecontent();
+        if r.is_err(){
+                println!("Error {:?}", r.unwrap_err());
+        }
+        c4::ownstructs();
+
         //
         // // from c05_modules
         // c5::externalcall();

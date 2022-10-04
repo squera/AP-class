@@ -15,7 +15,7 @@ pub fn var_ass_mut(){
     /* ==== Variables, Assignments and Mutability ====
        =============================================== */
 
-    // variables are defined via keyword `let`.
+    // variables are defined via keyword `let`
     let x : i32 = 10;           // defines a variable of name x and its type
     // variables can have their type annotation, or it can be inferred
     let y = 11;         // variable definition but with type inference
@@ -31,14 +31,17 @@ pub fn var_ass_mut(){
     // By default, variables are **immutable**, except you specify it.
     // y = y+1;             // DNC: error[E0384]: cannot assign twice to immutable variable `y`
     let mut z = 10;     // this is a mutable variable
+    println!("Value of z: {}",z);
     z = z+1;                   // and we can mutate it
     println!("Value of z: {}",z);
 
-    // constants must declare their types
+    // constants **must** declare their types
     const _TRUE : i32 = 1;
     // this constant is local to the function, `FALSE` is shared by all functions in this file
-
+    // the _ underscore before the name tells the rust compiler to not worry about the const usage
 }
+
+
 const _FALSE : i32 = 0;
 // QUIZ: can i use const FALSE from `src/main.rs` ?
 
@@ -94,6 +97,9 @@ pub fn vals_types(){
     let _last = tuple.2;
     println!("First element: {} = {} = {}", el1, first, el01);
 
+    let mut t = (1,2,'c');
+    t = (1,2,t.2);
+
     //  - Arrays: fixed length, each field has the same type, allocated on the stack
     // the i32 annotation is the type of each field, the 5 annotation is the length
     let _a: [i32; 5] = [1, 2, 3, 4, 5];
@@ -105,6 +111,13 @@ pub fn vals_types(){
     let a1 = a[0];
     let a2 = a[1];
     println!("Array Elements: {} and {}", a1, a2);
+
+    let mut aa = [(1,2),(1,4)];
+    println!("Array1 {:?}",aa);
+    aa = [aa[0],(4,5)];
+    println!("Array2 {:?}",aa);
+    aa[1].0 = 3;
+    println!("Array3 {:?}",aa);
 
     // There are **NO** buffer overflows in Rust (in the worst case it'll panic)
     // the length of arrays is always statically known and it cannot be exceeded
@@ -123,8 +136,8 @@ pub fn vals_types(){
     match trimmed.parse::<u32>() {
         Ok(mut i) => {
             println!("Integer input: {}", i);
-            if i>5 {                            // comment and input 6
-                i = 5;
+            if i>4 {                            // comment and input 6
+                i = 4;
             }
             let _element = a[(i as usize)];
             println!("This will not print without the if");
@@ -178,6 +191,7 @@ pub fn expressions(){
     let a = [10, 20, 30, 40, 50];
     for element in a.iter() {
         println!("Iteration loop: the value is: {}", element);
+        // element = element + 1;
     }
     // iter - This borrows each element of the collection through each iteration.
     //      Thus leaving the collection untouched and available for reuse after the loop.
@@ -193,7 +207,7 @@ pub fn expressions(){
 // this is a private testing module, as the next line defines
 #[cfg(test)]
 mod testing {
-    use crate::full_files::c01_basic::testfuns::{crapadd, okadd};
+    use super::testfuns::{crapadd, okadd};
 
     // all functions marked as #[test] can be run with project testing
     #[test]

@@ -1,3 +1,4 @@
+
 /// This module shows some KEY concepts of Rust:
 ///     enums
 ///     Option
@@ -74,26 +75,18 @@ pub fn option(){
     // Note that `Option<T>` is not the same type as `T`.
     let x: i8 = 5;
     let y: Option<i8> = Some(5);
-    // QUIZ: can i do this:
-    let sum = x + y.unwrap();
-    // Y / N
-
-
-
-    //
+    // let sum = x + y;
     // DNC: error[E0277]: cannot add `Option<i8>` to `i8`
     // Option<i8> is like String, Vec, Bool, it is effectively another type,
     // look where it is placed in the syntax, right after the " : "
 
-    // // options have a number of specific destructors and error handling methods
-    let nopt : Option<i32> = None;
-    let opt = Some(10);
-    // if nopt.is_nons
-    // QUIZ: what will this expression do?
-    // let v = nopt.unwrap();
-
     //
-    // RTE: thread 'main' panicked at 'called `Option::unwrap()` on a `None` value'
+    // // options have a number of specific destructors and error handling methods
+    // if nopt.is_none() {
+    //     println!("This is None");
+    // }
+    // // QUIZ: what will these expressions do?
+    // // let v = nopt.unwrap();   // RTE: thread 'main' panicked at 'called `Option::unwrap()` on a `None` value'
     // // RTE = runtime error
     // let v = opt.unwrap();
     // println!("Some of {}",v);
@@ -121,13 +114,12 @@ pub fn patternmatching(){
     // Y / N
 
 
-    //
     // DNC: error[E0004]: non-exhaustive patterns: `V0` not covered
     match home {
-        // matches any V4, must be after the previous or that becomes unreachable
-        IpAddr::V4(a, b, c, d) => println!("Is V4"),
         // matches any V4 whose first field is 127
         IpAddr::V4(127, b, c, d) => println!("Is V4 loopback"),
+        // matches any V4, must be after the previous or that becomes unreachable
+        IpAddr::V4(a, b, c, d) => println!("Is V4"),
         // matches any V6
         IpAddr::V6(a) => println!("Is V6"),
         // the " _ " matches anything
@@ -143,6 +135,7 @@ pub fn patternmatching(){
         _ => 0,
     };
     println!("The first field is: {}", firstfield);
+
 
     // since pattern-matching works on Enums, it works on options too, even when combined,
     // like in a tuple: here the patters to test are 4
@@ -163,12 +156,9 @@ pub fn patternmatching(){
     let issome = nopt.is_some();
     let isnone = opt.is_none();
     // unwrap gets out the content of a Some
-    if isnone {
-        let content = opt.unwrap();
-    }
+    let content = opt.unwrap();
     // careful, using `unwrap` can panic when called on Nones
-    let exp = nopt.expect("insert error message here");
-    println!("nopt {}",exp);
+    let exp = opt.expect("insert error message here");
     // `expect` is like unwrap but with a specific message
 
     // there are many more ways to use an Option, check out
@@ -177,6 +167,16 @@ pub fn patternmatching(){
     // .ok_or_else
     // .zip
 }
+
+// Recursion
+// question from some time ago:
+// boils down to TCE(elimination VS TCO(optimisation
+// rust has TCO, not TCE
+
+// pub fn fib (n : i32) -> i32 {
+//     //..
+//     return fib ( n -1);
+// }
 
 /// This function showcases Rust errors
 /// See
@@ -257,42 +257,6 @@ pub fn errors() {
     //      you deny users of your code the option to recover
 }
 
-/// This function showcases errors in Rust collections (Vec)
-pub fn collectionerrors(){
-    // many Rust collections make extensive usage of Options and Results
-    let num = vec![10, 20];
-
-    println!("num[0]: {}", num[0]);
-    println!("num[1]: {}", num[1]);
-    // here we are accessing vector elements using .get
-    //      the difference with [.] is that .get returns an Option
-    //
-    println!("num[2]: {}", num.get(0).unwrap());
-    println!("num[3]: {}", num.get(1).unwrap());
-
-    // so we can use pattern matching or any learnt trick on .get
-    match num.get(2) {
-        Some(n) => {
-            println!("Found a value at index");
-        },
-        None =>{
-            println!("Found no value at index");
-        }
-    }
-    // or alternatively
-    if num.get(2).is_some(){
-        println!("Found a value at index");
-    }else{
-        println!("Found no value at index");
-    }
-
-    // let temp = num[2];
-    // This causes an error:
-    //      thread 'main' panicked at 'index out of bounds: the len is 2 but the index is 2', src/full_files/c03_enums.rs:259:16
-}
-
-
-
 
 // ? is an error propagation expression.
 // as such it only propagates the error part of Options or Results: None / Err
@@ -300,23 +264,24 @@ pub fn collectionerrors(){
 fn qm() -> Option<i32> {
     // look at the type of the return: it's an option
     // same type of retn
-    let r = retn()?;
+    let r = retop()?;
+    let r = match retop(){
+        Some(z) => z,
+        None => return None,
+    };
     // look at the type of `r`: it's already an i32!
     // what happens when i remove the `?` ?
     return Some(4);
     // how can this return statement be reached ?
 }
-
 pub fn testqm() {
     let r = qm();
     println!("Received {:?}",r);
     let r = retop();
     println!("Received {:?}",r);
 }
-
-
-fn retop() -> Option<i32>{
-    return Some(3);
+fn retop() -> Option<String>{
+    return Some(String::from("asd"));
 }
 fn retn() -> Option<i32> {
     return None;
@@ -331,34 +296,32 @@ use std::io::prelude::*;
 pub fn readfilecontent () -> Result<(),String>{
 
     // create a new file X -> deal with the Result
+    let file = File::open("foo.txt");
+    let mut f = match file {
+        Ok(x) => x,
+        Err(e) => return Err(String::from("could not open")),
+    };
+    let r = f.write_all(b"adv prog sssss");
     // do not unwrap immediately -> issues when unwrapping later
     // write to it using write_all and a 'b' buffer -> deal with the Result
     // read its content
+    let mut s = String::new();
+    f.read_to_string(&mut s);
+    let scount = calculateS(&s);
+    println!("String : {}, count: {}", s, scount);
     // feed to calculateS, with String parameter (not &String) -> Ownership!
     // printout the content and the s's
-
-    let mut file = File::create("foo.txt").unwrap();
-    file.write_all(b"ssSSSss");
-    let mut file = File::open("foo.txt").unwrap();
-    let mut contents = String::new();
-    let r = file.read_to_string(&mut contents);
-    if r.is_err(){
-        return Err(String::from("asd"));
-    }
-    let tots = calculateS(&contents);
-
-    println!("Contents: {}, with {}s",contents, tots);
     return Ok(());
 }
 // write out calculateS
 // use chars iterator
 // use eq_ignore_ascii_case
-fn calculateS(s : &String) -> i32{
-    let mut tot = 0;
-    for c in s.chars(){
-        if c.eq_ignore_ascii_case(&'s') {
-            tot +=1;
+fn calculateS(string : &String) -> i32{
+    let mut count =0;
+    for x in string.chars(){
+        if x.eq_ignore_ascii_case(&'s'){
+            count +=1;
         }
     }
-    return tot;
+    return count;
 }

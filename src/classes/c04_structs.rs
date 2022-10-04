@@ -29,7 +29,7 @@ pub fn struct_usage(){
     };
     // " user0 " is an immutable struct
     // _user0.email = String::new();
-
+    
 
 
     // DNC: error[E0594]: cannot assign to `user0.email`, as `user0` is not declared as mutable
@@ -97,6 +97,8 @@ struct Rectangle {
     width: u32,
     height: u32,
 }
+// println!("{:?}",r);
+
 // alternatively, you have to implement the fmt method as follows:
 // this is a way for rust to import the `fmt` module from the `std` crate
 // for now, it suffices to say this is an import, we'll look at these things in detail soon
@@ -191,10 +193,11 @@ impl Rectangle {
     fn take_ownership(self) {
     }
     // QUIZ: are these methods or functions:
-    // pub fn test1(&self) ...
-    // fn test2(&self, arg: int) ...
-    // fn test3(arg : int) ...
+    // 1 pub fn test1(&self) ...
+    // 2 fn test2(&self, arg: int) ...
+    // 3 fn test3(arg : int) ...
 }
+
 
 // Sometimes we want to define functions for structs.
 // The difference between a *method* and a *function* of a struct
@@ -214,7 +217,7 @@ impl Rectangle {
     // so the following is not correct,
     // you have to change the name of the function
     // DNC: error[E0201]: duplicate definitions with name `new`:
-    // pub fn new( width : u32, height : u32) -> Rectangle {
+    // pub fn new_wh( width : u32, height : u32) -> Rectangle {
     //     Rectangle{ width, height }
     // }
     pub fn new_with_params( width : u32, height : u32) -> Rectangle {
@@ -228,6 +231,7 @@ pub fn struct_impl(){
     // this is how methods are called
     // note that the `&self` parameter is written in dot notation
     let a = r.area();
+    // r.double();
     // they can also be written in infix form, but this is strongly discouraged
     let p = Rectangle::perimeter(&r);
     println!("The Rectangle is {:?}",r);
@@ -240,3 +244,38 @@ pub fn struct_impl(){
 //  https://cs140e.sergio.bz/notes/lec3/cheat-sheet.pdf
 
 
+struct Test {
+    pub f: i32,
+    pub s: Vec<i32>,
+}
+pub fn ownstructs() {
+    let mut example = Test {
+        f: 32,
+        s: vec![1],
+    };
+    let new_f = example.f;
+    let new_s = example.s;
+    println!("First {}", new_f);        // copied or moved ?
+    println!("Second {:?}",new_s);      // copied or moved ?
+    // who owns the vector of 1s?
+    // println!("vec {}",example.s);
+    // return example;
+}
+
+pub fn testvec(){
+    let mut v = vec![5];
+    v.push(6);
+
+    let sixindex = findinv(&v);
+    v.push(9);
+}
+fn findinv(v : &Vec<i32>) -> i32 {
+    let mut counter =0;
+    for x in v.iter() {
+        if *x == 6{
+            return counter;
+        }
+        counter+=1;
+    }
+    return -1;
+}
