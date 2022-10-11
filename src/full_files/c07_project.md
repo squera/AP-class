@@ -238,6 +238,9 @@ publish = ["kellnr"]
 #do not modify the "publish" key, this is the name of the registry
 # as read from the ".cargo/config.toml" file
 ```
+and use the command
+`cargo publish`
+to publish the crate to the mentioned registry.
 
 Each group's market is called like the group, so they are
 guaranteed to be disjoint (in the repo) by their group name.

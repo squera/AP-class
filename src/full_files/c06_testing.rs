@@ -1,5 +1,3 @@
-///
-/// https://doc.rust-lang.org/rust-by-example/testing.html
 
 // open the other project    `libtest`
 

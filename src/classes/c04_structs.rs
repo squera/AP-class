@@ -244,6 +244,8 @@ pub fn struct_impl(){
 //  https://cs140e.sergio.bz/notes/lec3/cheat-sheet.pdf
 
 
+// additions
+
 struct Test {
     pub f: i32,
     pub s: Vec<i32>,

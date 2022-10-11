@@ -8,3 +8,5 @@ pub mod c04_structs;
 pub mod c04_structshelper;
 pub mod c05_modules;
 pub mod c06_testing;
+pub mod c08_lifetimes;
+pub mod c07b_maps;

@@ -15,7 +15,8 @@ use basedir::c02_ownership as c2;
 use basedir::c03_enums as c3;
 use basedir::c04_structs as c4;
 use basedir::c05_modules as c5;
-// use basedir::c06_testing as c6;
+use basedir::c06_testing as c6;
+use basedir::c07b_maps as cm;
 // use basedir::c09_traits as c9;
 // use basedir::c10_OOP as c10;
 // use basedir::c11_heap as c11;
@@ -52,13 +53,12 @@ pub fn main() {
         // c4::struct_printing();
         // c4::struct_impl();
 
-
-        c3::testqm();
-        let r = c3::readfilecontent();
-        if r.is_err(){
-                println!("Error {:?}", r.unwrap_err());
-        }
-        c4::ownstructs();
+        // c3::testqm();
+        // let r = c3::readfilecontent();
+        // if r.is_err(){
+        //         println!("Error {:?}", r.unwrap_err());
+        // }
+        // c4::ownstructs();
 
         //
         // // from c05_modules
@@ -68,6 +68,15 @@ pub fn main() {
         // // open c06_testing
         //
         // // open c07_project
+
+        // cm::singlemap();
+        // cm::twomaps();
+        // cm::lazymap_collect();
+        // cm::lazymap_nocollect();
+        // cm::string_tolower();
+        // cm::maps_options();
+        cm::mapsownership();
+
         //
         // // open c08_lifetimes
         //

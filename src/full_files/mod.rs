@@ -14,3 +14,4 @@ pub mod c09_traits;
 pub mod c10_OOP;
 pub mod c11_heap;
 pub mod c12_fp;
+pub mod c07b_maps;
