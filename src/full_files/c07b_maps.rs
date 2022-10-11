@@ -81,3 +81,69 @@ pub fn maps_options(){
         .collect();
     println!("{:?}",numbers);
 }
+
+/// https://hermanradtke.com/2015/06/22/effectively-using-iterators-in-rust.html/
+pub fn mapsownership(){
+    let s1 = String::from("asd1");
+    let s2 = String::from("asd2");
+    let s3 = String::from("asd3");
+    let s4 = String::from("asd4");
+    let mut v : Vec<String> = Vec::new();
+    v.push(s1); v.push(s2); v.push(s3); v.push(s4);
+    let newv : Vec<String> = v
+        .iter()
+        .map(|x| x.replace('a', "aa"))
+        .collect();
+    println!("v: {:?}",v);
+    println!("v: {:?}",newv);
+    // using 'replace' returns a new string! no need for ownership transfer
+    // so many similar examples are not informative
+
+    let n1 = Node::new(10);
+    let n2 = Node::new(20);
+    let n23 = Node::new(23);
+    let n4 = Node::new(40);
+    let mut vv = vec![n1,n2,n4];
+    vv.push(n23);
+    // pushing moves ownership: vv now owns the nodes
+    let mut v2 : Vec<Node> = Vec::new();
+    println!("vv {:?}",vv);
+    let r : Vec<()> = vv
+        .iter_mut()
+        .map(|mut el| el.inc_content())
+        .collect();
+    println!("vv {:?}",vv);
+    println!("r {:?}",r);
+    println!("v2 {:?}",v2);
+    // but iter and iter_mut are still borrowing data, not owning it
+    // in fact, here we can still print  vv
+
+    let rr : Vec<()> = vv
+        // .iter()  //cannot move
+        .into_iter()   // acquires ownership
+        .map(|el| v2.push(el))
+        .collect();
+    // println!("vv {:?}",vv);     // passed ownership of vv away
+    println!("v2 {:?}",v2);
+    println!("rr {:?}",rr);
+    // to change ownership of data, use into_iter
+    // see that we cannot print vv afterwards, vv is not the owner!
+}
+
+#[derive(Debug)]
+pub struct Node {
+    content: i32,
+}
+
+impl Node {
+    pub fn new(content: i32) -> Node {
+        Node { content }
+    }
+    fn eq_content(&self, o: &Node) -> bool {
+        self.content == o.content
+    }
+    pub fn eq(&self, o: &Node) -> bool {
+        self.eq_content(o)
+    }
+    pub fn inc_content(&mut self){self.content+=1;}
+}

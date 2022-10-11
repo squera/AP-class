@@ -240,3 +240,40 @@ pub fn struct_impl(){
 //  https://cs140e.sergio.bz/notes/lec3/cheat-sheet.pdf
 
 
+// additions
+
+struct Test {
+    pub f: i32,
+    pub s: Vec<i32>,
+}
+pub fn ownstructs() {
+    let mut example = Test {
+        f: 32,
+        s: vec![1],
+    };
+    let new_f = example.f;
+    let new_s = example.s;
+    println!("First {}", new_f);        // copied or moved ?
+    println!("Second {:?}",new_s);      // copied or moved ?
+    // who owns the vector of 1s?
+    // println!("vec {}",example.s);
+    // return example;
+}
+
+pub fn testvec(){
+    let mut v = vec![5];
+    v.push(6);
+
+    let sixindex = findinv(&v);
+    v.push(9);
+}
+fn findinv(v : &Vec<i32>) -> i32 {
+    let mut counter =0;
+    for x in v.iter() {
+        if *x == 6{
+            return counter;
+        }
+        counter+=1;
+    }
+    return -1;
+}
