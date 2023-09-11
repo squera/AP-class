@@ -1,5 +1,7 @@
+/// Material for this module:
 ///
-/// https://www.newline.co/@kkostov/the-rust-map-function-a-gateway-to-iterators--f991b22b
+///     https://hermanradtke.com/2015/06/22/effectively-using-iterators-in-rust.html/
+///     https://www.newline.co/@kkostov/the-rust-map-function-a-gateway-to-iterators--f991b22b
 
 // do you recall map from functional programming?
 // type of map:  list a -> (a->b) -> list b
