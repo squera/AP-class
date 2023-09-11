@@ -118,5 +118,5 @@ pub fn externalcall(){
 use kellnrtest::external_function;
 
 pub fn external_registry_call(){
-    println!("received true {}", external_function())
+    println!("received trues {}", external_function())
 }

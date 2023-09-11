@@ -7,6 +7,13 @@
 ///     commands
 /// Then it shows a tiny bit of the Rust
 ///     testing infrastructure
+
+/// Material for this module:
+///     https://doc.rust-lang.org/book/ch03-00-common-programming-concepts.html
+///     https://doc.rust-lang.org/book/ch03-02-data-types.html
+///     https://doc.rust-lang.org/book/ch03-03-how-functions-work.html
+///     https://doc.rust-lang.org/book/ch03-05-control-flow.html
+
 // do not care about this line
 use std::io;
 
@@ -43,7 +50,6 @@ const _FALSE : i32 = 0;
 // QUIZ: can i use const FALSE from `src/main.rs` ?
 
 /// This function showcases Rust base and compound types
-/// https://doc.rust-lang.org/book/ch03-02-data-types.html
 pub fn vals_types(){
     /* ==== Base Types ====
        ==================== */
@@ -137,9 +143,6 @@ pub fn vals_types(){
 }
 
 /// This function showcases Rust expressions and commands
-/// See also:
-///     https://doc.rust-lang.org/book/ch03-03-how-functions-work.html
-///     https://doc.rust-lang.org/book/ch03-05-control-flow.html
 pub fn expressions(){
     // Rust has if-then and if-then-else conditionals
     // Rust has different forms of iteration

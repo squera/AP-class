@@ -10,3 +10,8 @@ pub mod c05_modules;
 pub mod c06_testing;
 pub mod c08_lifetimes;
 pub mod c07b_maps;
+pub mod c09_traits;
+pub mod c10_OOP;
+pub mod c11_heap;
+pub mod c12_fp;
+pub mod c99_QA;

@@ -335,6 +335,7 @@ pub mod closures{
         for n in 0.. {
             // Square the number
             let n_squared = n * n;
+
             if n_squared >= upper {
                 // Break loop if exceeded the upper limit
                 break;
@@ -361,8 +362,6 @@ pub mod closures{
     }
 
 }
-
-// here
 
 /* ======= Iterators =======
    ========================= */
@@ -594,10 +593,11 @@ pub mod iterators{
     //
     struct Counter {
         count: u32,
+        upperbound:u32
     }
     impl Counter {
         fn new() -> Counter {
-            Counter { count: 0 }
+            Counter { count: 0, upperbound:10 }
         }
     }
     // We can implement an iterator for this struct as shown below.
@@ -607,7 +607,7 @@ pub mod iterators{
 
         // and next returns an option of that item
         fn next(&mut self) -> Option<Self::Item> {
-            if self.count < 5 {
+            if self.count < self.upperbound {
                 self.count += 1;
                 Some(self.count)
             } else {
@@ -628,6 +628,9 @@ pub mod iterators{
         assert_eq!(counter.next(), Some(4));
         assert_eq!(counter.next(), Some(5));
         assert_eq!(counter.next(), None);
+
+        // what are the differences between THIS iterator and the VEC one?
+
     }
     //
     // Note, that with the simple implementation of this next method,
@@ -652,5 +655,15 @@ pub mod iterators{
             .sum();
         assert_eq!(18, sum);
     }
+
+
+    // pub fn test(){
+    //     let mut x = vec![1,2,34,4];
+    //     x.iter().enumerate()
+    //         .map(|i|{if i.0==0 {i.1}})
+    //         .collect()
+    //         ;
+    //
+    // }
 
 }

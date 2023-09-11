@@ -17,10 +17,11 @@ use basedir::c04_structs as c4;
 use basedir::c05_modules as c5;
 use basedir::c06_testing as c6;
 use basedir::c07b_maps as cm;
-// use basedir::c09_traits as c9;
-// use basedir::c10_OOP as c10;
-// use basedir::c11_heap as c11;
-// use basedir::c12_fp as c12;
+use basedir::c09_traits as c9;
+use basedir::c10_OOP as c10;
+use basedir::c11_heap as c11;
+use basedir::c12_fp as c12;
+use basedir::c99_QA as cqa;
 
 // Below is the main function.
 // Notice that CLion already knows we can run it (see the green triangle)
@@ -69,13 +70,14 @@ pub fn main() {
         //
         // // open c07_project
 
+        // // c_07b_maps
         // cm::singlemap();
         // cm::twomaps();
         // cm::lazymap_collect();
         // cm::lazymap_nocollect();
         // cm::string_tolower();
         // cm::maps_options();
-        cm::mapsownership();
+        // cm::mapsownership();
 
         //
         // // open c08_lifetimes
@@ -86,7 +88,7 @@ pub fn main() {
         // c9::traitexample();
         // c9::example_notify();
         // c9::animals_example();
-        // c9::example_supertraits();
+        // // c9::example_supertraits();
         //
         // // c10_oop
         // c10::example_oop1();
@@ -102,6 +104,8 @@ pub fn main() {
         // c11::example_rc();
         // c11::implitictderef();
         // c11::arc();
+        // c11::refcell_usage();
+        // c11::refcell_usage_2();
         // c11::tests::it_sends_an_over_75_percent_warning_message();
         // c11::workingtests::it_sends_an_over_75_percent_warning_message();
         // c11::rc_plus_refcell::examplepcrefcell();
@@ -120,5 +124,8 @@ pub fn main() {
         // c12::iterators::filters_by_size();
         // c12::iterators::examplefpiterators();
         // c12::iterators::calling_next_directly();
-        // c12::iterators::using_other_iterator_trait_methods();
+        // c12::iterators::using_other_iterator_trait_methods();'
+
+        // cqa::traitqa::testit();
 }
+

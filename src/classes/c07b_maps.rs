@@ -86,6 +86,18 @@ pub fn maps_options(){
 }
 
 /// https://hermanradtke.com/2015/06/22/effectively-using-iterators-in-rust.html/
+#[derive(Debug)]
+pub struct Node {
+    content: i32,
+}
+
+impl Node {
+    pub fn new(content: i32) -> Node {
+        Node { content }
+    }
+    pub fn inc_content(&mut self){self.content+=1;}
+}
+
 pub fn mapsownership(){
     let s1 = String::from("asd1");
     let s2 = String::from("asd2");
@@ -130,23 +142,5 @@ pub fn mapsownership(){
     println!("v2 {:?}",v2);
     println!("rr {:?}",rr);
     // to change ownership of data, use into_iter
-    // see that we cannot print vv afterwards, vv is not the owner!
-}
-
-#[derive(Debug)]
-pub struct Node {
-    content: i32,
-}
-
-impl Node {
-    pub fn new(content: i32) -> Node {
-        Node { content }
-    }
-    fn eq_content(&self, o: &Node) -> bool {
-        self.content == o.content
-    }
-    pub fn eq(&self, o: &Node) -> bool {
-        self.eq_content(o)
-    }
-    pub fn inc_content(&mut self){self.content+=1;}
+    // see that we cannot1 print vv afterwards, vv is not the owner!
 }

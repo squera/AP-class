@@ -8,10 +8,16 @@
 ///     Vec
 ///     Hashmap
 
+/// Material for this module:
+///
+///     https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html
+///     https://doc.rust-lang.org/std/string/struct.String.html
+///     https://doc.rust-lang.org/std/vec/struct.Vec.html
+///     https://doc.rust-lang.org/std/collections/struct.HashMap.html
+///     https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html
+///     https://doc.rust-lang.org/book/ch04-03-slices.html
 
 /// This function showcases Rust Strings and how to use them
-/// See
-///     https://doc.rust-lang.org/std/string/struct.String.html
 pub fn strings(){
     // `str_string` has type &str, i.e., pointer to a `str`.
     // This is also called a String literal. It is hardcoded into the text of our program.
@@ -81,8 +87,6 @@ pub fn strings(){
 }
 
 /// This function showcases Rust Vec
-/// See
-///     https://doc.rust-lang.org/std/vec/struct.Vec.html
 pub fn vec(){
     // Like `array`, vector `Vec` can store a single type of values next to each other.
     // Unlike `array`, `Vec` is allocated in the heap and doesn't need to have a fixed length at compile time.
@@ -125,8 +129,6 @@ pub fn vec(){
 }
 
 /// This function showcases Rust HashMap
-/// See
-///     https://doc.rust-lang.org/std/collections/struct.HashMap.html
 pub fn hashmap(){
     // A Hashmap is a collection that stores a key-value mapping
     // The type is HashMap<K,V>, which is Polymorphic in the types of keys `K` and of values `V`
@@ -151,8 +153,6 @@ pub fn hashmap(){
 }
 
 /// This function discusses various aspects of Rust ownership
-/// See
-///     https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html
 pub fn ownership(){
     // Central to the reason why Rust has ownership is the role of Stack and Heap.
     // let's recap stack and heap from 1st year
@@ -248,8 +248,6 @@ fn makes_copy(some_integer: i32) { // some_integer comes into scope
 } // Here, some_integer goes out of scope. Nothing special happens.
 
 /// This function presents Rust references and Borrowing
-/// See
-///     https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html
 pub fn refs_and_borrowing(){
     // Borrowing avoids transferring ownership
     //  If we don't want a function to take ownership of our data,
@@ -355,8 +353,6 @@ fn no_dangle() -> String {
 }
 
 /// This function presents Rust slicing
-/// See
-///     https://doc.rust-lang.org/book/ch04-03-slices.html
 pub fn slices(){
     // Another type that does not have ownership is the slice.
     // Slices let you reference a contiguous sequence of elements in a collection rather than the whole collection.

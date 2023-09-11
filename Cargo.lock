@@ -18,12 +18,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
-name = "davide_test_lib"
-version = "0.1.0"
-source = "registry+git://advancedprogramming.disi.unitn.it/index"
-checksum = "963f00f9a69e6e31406d8dff64287b6b66b0820f10ba7f0e99cd0fce4b291fd9"
-
-[[package]]
 name = "getrandom"
 version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -36,12 +30,9 @@ dependencies = [
 
 [[package]]
 name = "kellnrtest"
-version = "0.1.1"
+version = "0.1.4"
 source = "registry+git://advancedprogramming.disi.unitn.it/index"
-checksum = "353cdaa1a6f6b2120730451c73fb6fa531ff0a784110fcd71737a817877b216d"
-dependencies = [
- "davide_test_lib",
-]
+checksum = "6b0e34bd64e674458459e16ae73c805c1c87f04004a82cf21e601cd0b8df4a37"
 
 [[package]]
 name = "leaflib"

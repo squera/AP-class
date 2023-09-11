@@ -12,45 +12,44 @@
 // like this, which **won’t work**:
 
 // uncomment struct and function
-// struct User {
-//     username: & str,
-//     email: & str,
-//     sign_in_count: u64,
-//     active: bool,
-// }
+struct User<'a> {
+    username: &'a str,
+    email: &'a str,
+    sign_in_count: u64,
+    active: bool,
+}
 // //
-// pub fn lifetime_test() {
-//     let user1 = User {
-//         email: "someone@example.com",
-//         username: "someusername123",
-//         active: true,
-//         sign_in_count: 1,
-//     };
-//     // DNC: error[E0106]: missing lifetime specifier
-//     // adding the lifetime tells the borrow checker the information
-//     // about how long will that value 'live'
-//
-//     // The lifetime of a variable starts at the time when the variable is defined
-//     // and ends after the last time that the variable is used, within the scope
-//     //
-//     // The borrow checker is the tool that performs lifetime analysis
-//     // Look at this code, which defines 2 new nested scopes.
-//     // each scope defines a new lifetime  (lifetimes are specified with a preceding '  "tick"
-//     // QUIZ: does this code respect lifetimes?
-//     // Y/N
-//     {
-//         let r;                  // ---------+-- 'a
-//                                 //          |
-//         {                       //          |
-//         let x = 5;              // -+-- 'b  |
-//         r = &x;                 //  |       |
-//         }                       // -+       |
-//                                 //          |
-//         println!("r: {}", r);   //          |
-//     }                           //          |
-//                                 // ---------+
-//
-// }
+pub fn lifetime_test() {
+    let user1 = User {
+        email: "someone@example.com",
+        username: "someusername123",
+        active: true,
+        sign_in_count: 1,
+    };
+    // DNC: error[E0106]: missing lifetime specifier
+    // adding the lifetime tells the borrow checker the information
+    // about how long will that value 'live'
+
+    // The lifetime of a variable starts at the time when the variable is defined
+    // and ends after the last time that the variable is used, within the scope
+    //
+    // The borrow checker is the tool that performs lifetime analysis
+    // Look at this code, which defines 2 new nested scopes.
+    // each scope defines a new lifetime  (lifetimes are specified with a preceding '  "tick"
+    // QUIZ: does this code respect lifetimes?
+    // Y/N
+    // {
+    //     let r;             // ---------+-- 'a
+    //                             //          |
+    //     {                       //          |
+    //     let x = 5;          // -+-- 'b  |
+    //     r = &x;                 //  |       |
+    //     }                       // -+       |
+    //                             //          |
+    //     println!("r: {}", r);   //          |
+    // }                           // ---------+
+}
+
 //
 //
 //     //
@@ -61,14 +60,15 @@
 // fn longest(x:&str, y:&str) -> &str {
 //     if x.len() > y.len() { x } else { y}
 // } // this funcion doesn't work
-// DNC: error[E0106]: missing lifetime specifier
-// When running this function, Rust doesn't know the lifetime of `x` and `y`. The following situation may happen:
-
-// uncomment this function
-// pub fn uselongest() {
+// // DNC: error[E0106]: missing lifetime specifier
+// // When running this function, Rust doesn't know the lifetime of `x` and `y`.
+// // The following situation may happen:
+//
+// // uncomment this function
+// pub fn uselongest() {// c
 //     let x = String::from("hi");
 //     let z;
-//     {
+//     {//d
 //         let y = String::from("there");
 //         z = longest(&x,&y); //will be &y
 //     } //drop y, and thereby z
@@ -90,6 +90,7 @@
 //
 fn correct_longest<'a>(x:&'a str, y:&'a str) -> &'a str {
     if x.len() > y.len() { x } else { y }
+    // if ... {y} else {x}
 }
 // Note:
 // - Each reference to a value of type `t` has a `lifetime parameter`.
@@ -136,8 +137,17 @@ fn outliving_longest<'b, 'a: 'b>(x:&'a str, y:&'b str) -> &'b str {
     if x.len() > y.len() { x } else { y}
 }
 // We can also use lifetimes in data definitions, and we see this later when we define structs, enums, etc.
-//
-//
+pub fn testol(){
+    {// l1
+        let s1 = String::from("l1");
+        let mut s2;
+        {//l2
+            s2 = String::from("l2");
+        }//
+        let s3 = outliving_longest(&s1,&s2);
+    }
+
+}
 
 /* = Non-Lexical Lifetimes =
    ====================== */
