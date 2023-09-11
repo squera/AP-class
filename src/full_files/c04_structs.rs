@@ -2,11 +2,12 @@
 ///     structs
 ///     impl
 
+/// Material for this module:
+///      https://doc.rust-lang.org/book/ch05-00-structs.html
+
 // A struct is a custom data type that lets you name and package together multiple related values
 //  that make up a meaningful group.
 //  Each piece of data and its name is called a field, different fields can have different types
-// See
-//      https://doc.rust-lang.org/book/ch05-00-structs.html
 
 struct User {
     username: String,
@@ -238,7 +239,6 @@ pub fn struct_impl(){
 // While you learn where each type is stored, use the cheatsheet below
 // but note that it contains a lot more types than we have seen or that we will see:
 //  https://cs140e.sergio.bz/notes/lec3/cheat-sheet.pdf
-
 
 // additions
 

@@ -1,6 +1,6 @@
-/// See
+/// Material for this module:
 ///     https://doc.rust-lang.org/book/ch07-00-managing-growing-projects-with-packages-crates-and-modules.html
-///
+
 /// As you write large programs, organizing your code will be important.
 /// As a project grows, you can organize code by splitting it into multiple modules and then multiple files.
 /// A package can contain multiple binary crates and optionally one library crate.
