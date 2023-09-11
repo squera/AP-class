@@ -5,6 +5,13 @@
 ///     Result & error handling
 ///     error handling in Vec
 
+/// Material for this module:
+///
+///     https://doc.rust-lang.org/book/ch06-00-enums.html
+///     https://doc.rust-lang.org/std/option/enum.Option.html
+///     https://doc.rust-lang.org/book/ch18-00-patterns.html?highlight=pattern%20ma#patterns-and-matching
+///     https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html
+
 // enums define a type that has multiple possible variants.
 // Enums are a feature in many languages, but their capabilities differ in each language.
 // Rust’s enums are most similar to algebraic data types in functional languages, such as F#, OCaml, and Haskell.
@@ -25,8 +32,6 @@ enum IpAddr {
 
 
 /// This function showcases Rust Enums and how to use them
-/// See
-///     https://doc.rust-lang.org/book/ch06-00-enums.html
 pub fn enum_usage(){
     // we can create values of each type declared in the enum
     let _four = IpAddrKind::V4;
@@ -65,8 +70,6 @@ enum Option<T> {
  */
 
 /// This function showcases Rust Options and how to use them
-/// See
-///     https://doc.rust-lang.org/std/option/enum.Option.html
 // let's look at Option usages
 pub fn option(){
     // here we instantiate the type parameter T with i8
@@ -100,8 +103,6 @@ pub fn option(){
 }
 
 /// This function showcases Pattern matching in Rust
-/// See
-///     https://doc.rust-lang.org/book/ch18-00-patterns.html?highlight=pattern%20ma#patterns-and-matching
 pub fn patternmatching(){
     let home = IpAddr::V4(127, 0, 0, 1);
     let loopback = IpAddr::V6(String::from("::1"));
@@ -179,8 +180,6 @@ pub fn patternmatching(){
 }
 
 /// This function showcases Rust errors
-/// See
-///     https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html
 pub fn errors() {
     // Rust groups errors into two major categories:
     //      recoverable and
