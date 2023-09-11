@@ -1,6 +1,9 @@
 /// This module shows some KEY concepts of Rust:
 ///     lifetimes
 /// all these functions are private: they need not be called, they need to typecheck only
+///
+/// Material for this module:
+///     https://doc.rust-lang.org/book/ch10-03-lifetime-syntax.html
 
 /* ======= Lifetimes =======
    ====================== */

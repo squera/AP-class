@@ -2,6 +2,13 @@
 ///     generics
 ///     traits (definition, where clauses, impl, dyn)
 ///     polymorphism
+///
+/// Material for this module
+///
+///     https://doc.rust-lang.org/book/ch10-02-traits.html
+///     https://doc.rust-lang.org/reference/types/trait-object.html
+///     https://doc.rust-lang.org/reference/paths.html#self-1
+
 
 /* ======= Generics ========
    ====================== */
