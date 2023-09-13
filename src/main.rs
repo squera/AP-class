@@ -33,7 +33,7 @@ pub fn main() {
 
         // // // from c01_basic
         // c1::var_ass_mut();
-        // c1::vals_types();
+        c1::vals_types();
         // c1::expressions();
         //
         // // from c02_ownership

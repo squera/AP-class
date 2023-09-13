@@ -54,12 +54,13 @@ pub fn strings(){
     // this is **NOT** a String, it's a &str
     let s0 = "hell".to_string();
     // this is a String, but it is not mutable, as we are used to
-    // s0.push("o world"); // this does not typecheck
+    // s0.push("o world");
+    // this does not typecheck -> decomment and inspect the signature of 'push'
 
     let mut s = "hell".to_string();
     let t = String::from("o world");
     s.push_str(&t);
-    // QUIZ: what is peculiar about the line above?
+    // NOW: what is peculiar about the line above?
     // what is going on here? `push_str` wants a `&str`, why is passing a `&String` ok ?
 
     // This is an important Rust feature called
@@ -74,7 +75,8 @@ pub fn strings(){
 
     // Strings cannot be indexed directly, even though they are arrays,
     // because you can end in the middle of a character
-    // let h = s0[0];  // DNC: the type `String` cannot be indexed by `{integer}`
+    // let h = s0[0];
+    // DNC: the type `String` cannot be indexed by `{integer}`
     for c in s0.chars() {
         println!("Char: {:?}", c)
     }
@@ -106,6 +108,12 @@ pub fn vec(){
     // then observe the types of `n` and of `nn`:
     // QUIZ: can i do this:
     // nn = nn + n;
+
+
+
+
+
+
     // no, i need to deref `nn` first, it's a pointer!
     // while n gets dereferenced automatically to i32
     let nn = *nn;       //shadowing!
@@ -268,7 +276,7 @@ pub fn refs_and_borrowing(){
     // &s1 has type &String, which reads: pointer to String
     println!("The length of '{}' is {}.", s1, len);
     // QUIZ: can i write through a pointer? Can i do:
-    // let len = &s1.push();
+    // let len = &s1.push('a');
     // Y / N
 
 

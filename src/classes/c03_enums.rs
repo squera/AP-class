@@ -75,21 +75,29 @@ pub fn option(){
     // Note that `Option<T>` is not the same type as `T`.
     let x: i8 = 5;
     let y: Option<i8> = Some(5);
+    // QUIZ: can i do:
     // let sum = x + y;
+
+
+
+
+
     // DNC: error[E0277]: cannot add `Option<i8>` to `i8`
     // Option<i8> is like String, Vec, Bool, it is effectively another type,
     // look where it is placed in the syntax, right after the " : "
-
     //
-    // // options have a number of specific destructors and error handling methods
+    // options have a number of specific destructors and error handling methods
     // if nopt.is_none() {
     //     println!("This is None");
     // }
-    // // QUIZ: what will these expressions do?
-    // // let v = nopt.unwrap();   // RTE: thread 'main' panicked at 'called `Option::unwrap()` on a `None` value'
-    // // RTE = runtime error
+    // QUIZ: what will these expressions do?
+    // let v = nopt.unwrap();
     // let v = opt.unwrap();
     // println!("Some of {}",v);
+
+
+    // RTE: thread 'main' panicked at 'called `Option::unwrap()` on a `None` value'
+    // // RTE = runtime error
 }
 
 /// This function showcases Pattern matching in Rust
@@ -167,16 +175,6 @@ pub fn patternmatching(){
     // .ok_or_else
     // .zip
 }
-
-// Recursion
-// question from some time ago:
-// boils down to TCE(elimination VS TCO(optimisation
-// rust has TCO, not TCE
-
-// pub fn fib (n : i32) -> i32 {
-//     //..
-//     return fib ( n -1);
-// }
 
 /// This function showcases Rust errors
 /// See

@@ -9,6 +9,14 @@
 ///     testing infrastructure
 // do not care about this line
 use std::io;
+// I -> O
+
+// pub fn test() -> i32 {
+//     let x = 1;
+//     let y =  3+4;
+//     return 5;
+// }
+
 
 /// This function shows Rust variables, assignment and mutability
 pub fn var_ass_mut(){
@@ -16,20 +24,23 @@ pub fn var_ass_mut(){
        =============================================== */
 
     // variables are defined via keyword `let`
-    let x : i32 = 10;           // defines a variable of name x and its type
     // variables can have their type annotation, or it can be inferred
+    let x : i32 = 10;       // defines a variable of name x and its type
     let y = 11;         // variable definition but with type inference
     println!("Values of x and y: {} and {}", x, y);
 
     // variables can be rebound, though their type **changes**,
     // this is called shadowing
     let x = "a string?";
-    // println!("Value of x: {}", x+1);     // DNC: error[E0369]: cannot add `{integer}` to `&str`
+    // println!("Value of x: {}", x+1);
+    // DNC: error[E0369]: cannot add `{integer}` to `&str`
     // DNC == Does Not Compile
     println!("Value of x: {}", x);
 
     // By default, variables are **immutable**, except you specify it.
-    // y = y+1;             // DNC: error[E0384]: cannot assign twice to immutable variable `y`
+    let y = y+1;
+    // y += 1;
+    // DNC: error[E0384]: cannot assign twice to immutable variable `y`
     let mut z = 10;     // this is a mutable variable
     println!("Value of z: {}",z);
     z = z+1;                   // and we can mutate it
@@ -41,8 +52,9 @@ pub fn var_ass_mut(){
     // the _ underscore before the name tells the rust compiler to not worry about the const usage
 }
 
+// START HERE
 
-const _FALSE : i32 = 0;
+pub const _FALSE : i32 = 0;
 // QUIZ: can i use const FALSE from `src/main.rs` ?
 
 /// This function showcases Rust base and compound types
@@ -118,6 +130,8 @@ pub fn vals_types(){
     println!("Array2 {:?}",aa);
     aa[1].0 = 3;
     println!("Array3 {:?}",aa);
+    // QUIZ: cosa viene stampato qui?
+    // [(1, 2), (1, 4)] || [(1, 2), (4, 5)] || [(1, 2), (3, 5)] || [(3, 2), (4, 5)] || [(1, 3), (4, 5)]
 
     // There are **NO** buffer overflows in Rust (in the worst case it'll panic)
     // the length of arrays is always statically known and it cannot be exceeded
@@ -212,7 +226,7 @@ mod testing {
     // all functions marked as #[test] can be run with project testing
     #[test]
     // Ensure you can see the Cargo panel in Clion:
-    //      View -> Tool Windows -> Cargo  --> drag it where you want
+    //      View -> Tool Windows -> Cargo --> drag it where you want
     //      Click the 'run cargo command' --> type "cargo test" to run all the tests and only them
     //      see the change in the Run icon on the top-right icons menu
     fn test_crapadd() {
