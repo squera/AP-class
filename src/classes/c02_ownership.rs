@@ -16,11 +16,19 @@ pub fn strings(){
     // `str_string` has type &str, i.e., pointer to a `str`.
     // This is also called a String literal. It is hardcoded into the text of our program.
     // It must have known fixed length at compile time
-    let str_string : &str = "hello";
+    let str_string : &str = "wat";
     let mut str_string2 = "wht";
+    let s:String = String::from("asd");
     str_string2 = "mehs";
+    // let's talk about the types quickly: we have &str
+    // recall: variables are stack-allocated, thus the compiler needs to know at compile time
+    // the size of the variable (not just in Rust). But str: !Sized, which means the
+    // size of a value of type str cannot be known at compile time. For this reason,
+    // str must always be allocated elsewhere: in the .rodata
+    // see image at : https://en.wikipedia.org/wiki/Data_segment
+
     // note that we don't have methods to add to a `&str`, we can only replace it with something of fixed size
-    println!("Strings {} and {}", str_string , str_string2);
+    // println!("Strings {} and {}", str_string , str_string2);
 
     // A String is stored as a vector of bytes (`Vec<u8>`), guaranteed to always be a valid UTF-8 sequence.
     // A string is heap-allocated, growable, and not null-terminated.
@@ -40,22 +48,25 @@ pub fn strings(){
     let str_string = String::from(str_string);
     // Below is the reference of a *String*,
     // it allows us to refer to the string without taking ownership of it.
+    // Q: what tells us that `strptr` is a reference?
     let strptr_string : &String = &str_string;
     let str_slice : &str = &str_string[..2];
     println!("This is a slice {}", str_slice);
     println!("This is (not) a pointer: {}", strptr_string);
     // this does not show a pointer!
-    // when we see traits, we'll see the details of why this is printing this way
+    // when we see Traits, we'll see the details of why this is printing this way
     println!("This is a pointer: {:p}", strptr_string);
     // when we see structs, we will discuss displaying with Debug and Display
 
     // Using Strings in Rust is different than in other languages
-    let _s = "hell";
-    // this is **NOT** a String, it's a &str
-    let s0 = "hell".to_string();
-    // this is a String, but it is not mutable, as we are used to
-    // s0.push("o world");
-    // this does not typecheck -> decomment and inspect the signature of 'push'
+    let _s = "hell";  // this is **NOT** a String, Q: what is its type? (drop _ toreveal)
+    let s0 = & "hell".to_string();
+    // s0.push('a');  // decomment and inspect the signature of 'push'
+    // Q: why does this does not stypecheck ?
+
+    // s0 = &mut "asd".to_string();
+    // s0 is a String, but it is not mutable, as we are used to
+    // how do we fix it ?
 
     let mut s = "hell".to_string();
     let t = String::from("o world");
@@ -75,6 +86,7 @@ pub fn strings(){
 
     // Strings cannot be indexed directly, even though they are arrays,
     // because you can end in the middle of a character
+    // decomment the line below and compile
     // let h = s0[0];
     // DNC: the type `String` cannot be indexed by `{integer}`
     for c in s0.chars() {
@@ -103,21 +115,26 @@ pub fn vec(){
     v.pop();
     // or just get them values (for now, as immutable! )
     let n = v.get(0).unwrap();
-    let nn = v.get(2).unwrap();
+    let mut nn = v.get(2).unwrap();
     // first we need to deal with the options that `get` returns
     // then observe the types of `n` and of `nn`:
     // QUIZ: can i do this:
-    // nn = nn + n;
+    let nn3 = &(nn + n);
+    nn = nn3;
 
 
-
-
-
-
+    //
     // no, i need to deref `nn` first, it's a pointer!
     // while n gets dereferenced automatically to i32
-    let nn = *nn;       //shadowing!
+    // let nn = *nn;       //shadowing!
     println!("Adding stuff {}", nn + n);
+
+    // we can also get some element as a mutable entity, if we need to mutate it
+    let mut vv : Vec<String> = Vec::new();
+    vv.push("asd".to_string());
+    let mut x = vv.get_mut(0).unwrap();
+    let xx = x.push('a');
+    println!("{}--",x);
 
     // Vec tors can be iterated with for loops, taking immutable references
     for i in &v {
@@ -130,6 +147,32 @@ pub fn vec(){
     // For complex data structures that implement the Debug trait,
     // we can use {:?} to print them in a standard way -- more info on this later
     println!("Vector v {:?}", v);
+}
+
+pub fn mutability(){
+    // ref == ptr
+    // Q: what can you do on something of type pointer?
+
+    //
+    // r/w ... r/w/x ?
+
+    // let's see what can we do with Rust pointers:
+    let x : &mut String = &mut String::from("asd");
+    // x = x;
+    // Q why cannot I mutate the pointer itself?
+
+    let mut z : &String = & String::from("ad");
+    z = z;          // this works
+    // z.push('a');     // Q: can i decomment this?
+
+    //
+    // cannot mutate the content of the pointer: it is an immutable reference
+
+    // you need to adapt your mental model to Rust's
+    let mut y : &mut String = &mut String::from("asdasd");
+    y.push('a');        // fine: y points to a mutable String
+    y = x;                 // also fine: y itself is mutable
+
 }
 
 /// This function showcases Rust HashMap
@@ -185,24 +228,35 @@ pub fn ownership(){
         No dangling pointers!
     */
     // these curly braces introduce a new scope block
+    let mut s1 = String::from("hello");
     {
         // allocates s1
-        let s1 = String::from("hello");
+
         // moves s1 into s2
         let _s2 = s1;
+        /*
+        // decomment the print below
+        // println!("{}", s1); // error, `s1` doesn't own the value anymore.
         // DNC: borrow of moved value: `s1`
         // let's look at the compiler output to understand what is going on
-        // println!("{}", s1); // error, `s1` doesn't own the value anymore.
         // First: Rust errors are often very informative!
         //      the explanation is quite clear: String cannot be copied,
         //      its value is **MOVED** from s1 to s2
         //      and when s1 is used, it does not own the value anymore
+        //  not a copy, neither shallow nor deep
 
         // This is called MOVE SEMANTICS:
         //  the Rust type system statically keeps track of ownership of values
         //  and of how that ownership moves around were programs to execute
-
+        */
+        // if (false ){
+        //     s1 = _s2;
+        // } else {
+        //     // s1 = _s2;
+        // }
     } // When the scope is over, rust calls `drop()` function automatically to drop `s1` and `s2`.
+    // Q: what happens when I decomment this line?
+    // println!("{}", s1);
 
     // cloning
     {
@@ -218,15 +272,17 @@ pub fn ownership(){
     let x: i32 = 5;
     let y = x;
     println!("x = {}, y = {}", x, y); //works
-    //This is OK because x has a primitive type, `i32`, whose length is known at compile-time and is stored on the stack.
-    // So, the Rust compiler will *copy* the value of  `x` to `y`, so both `x` and `y` have the same value of type `5i32`
+    //This is OK because x has a primitive type, `i32`, whose length is known
+    // at compile-time and is stored on the stack.
+    // So, the Rust compiler will *copy* the value of  `x` to `y`,
+    // so both `x` and `y` have the same value of type `5i32`
     // but are stored in a different place on the stack.
     // This is because `i32` has the `Copy` trait.
     // If a type implements the `Copy` trait, the value of the type will be copied after the assignment.
     // This also matters with Implicit Deref Coercion, and we'll talk more about this later
 
     // 2 Words on Rust Traits:
-    //    A Trait is a way of saying that a type has a particular property
+    //    A Trait is a way of saying that a type has a particular behaviour (type)
     //    (e.g., Copy, Move, Debug, Display, PartialEq ...)
     // We'll discuss Traits at length later
 
@@ -237,26 +293,33 @@ pub fn ownership(){
 // Consider the following 3 functions
 // QUIZ: when is the memory for the heap-allocated `s` freed ?
 fn ownership_for_functions() {
-    // s comes into scope, in the heap
     let s = String::from("hello");
-    // s's value moves into the function `takes_ownership`
+    /* above, s comes into scope, in the heap
+     s's value moves into the function `takes_ownership`
+     */
     takes_ownership(s );
-    // ... and so is no longer valid here
+    /* ... and so is no longer valid here
     // x comes into scope, on the stack
+     */
     let x = 5;
-    // x would move into the function,
+    /* x would move into the function,
     // but i32 is Copy, so it's okay to still  use x afterward
-    makes_copy(x);
-} // Here, x goes out of scope, then s. But because s's value was moved, nothing happens:
-  //      it does not get deallocated because of this 'drop'
 
+     */
+    makes_copy(x);
+} /* Here, x goes out of scope, then s. But because s's value was moved, nothing happens:
+        it does not get deallocated because of this 'drop'
+*/
 fn takes_ownership(some_string: String) { // some_string comes into scope
     println!("{}", some_string);
-} // Here, some_string goes out of scope and `drop` is called. The backing memory is freed.
-
+}/* Here, some_string goes out of scope and `drop` is called. The backing memory is freed.
+ */
 fn makes_copy(some_integer: i32) { // some_integer comes into scope
     println!("{}", some_integer);
-} // Here, some_integer goes out of scope. Nothing special happens.
+}
+/* Here, some_integer goes out of scope. Nothing special happens.
+
+ */
 
 /// This function presents Rust references and Borrowing
 /// See
@@ -270,16 +333,19 @@ pub fn refs_and_borrowing(){
     // References are done with `&` ampersand operator.
     // The opposite of referencing by using `&` is dereferencing, which is accomplished with `*`.
 
-    let s1 = String::from("hello");
+    let mut s1 = String::from("hello");
     // note that the parameter we pass into `calculate_length` is &s1, not just s1
     let len = calculate_length(&s1);
     // &s1 has type &String, which reads: pointer to String
     println!("The length of '{}' is {}.", s1, len);
     // QUIZ: can i write through a pointer? Can i do:
-    // let len = &s1.push('a');
+    let len = &(s1.push('a'));
+    let len = &(s1).push('a');
+    // let len = (&s1).push('a');
+    println!("{:?}",len);
     // Y / N
 
-
+    //
     // `&` alone doesn't give us the permission to modify the data.
     // Remember that in Rust, everything is by default **immutable**.
     // To make a mutable reference, we need to specify `&mut` when making a reference.
@@ -289,11 +355,11 @@ pub fn refs_and_borrowing(){
     //**REMEMBER:** Mutable references have one big restriction: you can have only
     //          ONE
     // mutable reference to a particular piece of data in a particular scope.
-    // QUIZ: does this code compile?
     let mut s = String::from("hello");
-
     let r1 = &mut s;
+    // QUIZ: does this code compile? can i uncomment this?
     // let r2 = &mut s;
+    // s.push_str("asd");
     let r2 = "asd";
     println!("r1 and r2: {} and {}", r1, r2);
 
@@ -319,14 +385,21 @@ pub fn refs_and_borrowing(){
     //      years to understand truly why Rust rocks
 
     // Data Races Prevention Example
-    // QUIZ: does this code compile?
     let r1 = &s;
     let r2 = &s;
+    // QUIZ: does this code compile? can we uncomment this line?
     // let r3 = &mut s;
     let r3 = "asd";
-    println!("r1 and r2 and r3: {} and {} and {}", r1, r2, r3);
+    println!("r1 and r2 and r3: {} and {} and {}", r1, r2, s);
 
-    //
+    // q from student
+    let mut xx = String::from("asd");
+    // let rx = &mut xx;
+    // let ry = & xx;
+    // rx.len();
+    // xx.push_str("asdasd");
+    // println!("rr {} and {}", rx, xx);
+
     //DNC: cannot borrow `s` as mutable because it is also borrowed as immutable
 
     // Temporal memory safety includes: no dangling references (dangling pointers) and no use-after free
@@ -340,15 +413,22 @@ pub fn refs_and_borrowing(){
     // the data will not go out of scope before the reference to the data does.
 
     // take a look at `dangle`, uncomment this line
-    // let reference_to_nothing = dangle();
+    // let reference_to_nothing = dangle();  // line 428
 
     // take a look at `no_dangle`
     let string = no_dangle();
     println!("String {}",string);
+
+    // let mut s = String::from("hello");
+    // let r1 = &mut s;
+    // let r2 = &s;
+    // println!("r1 and r2: {} and {}", r1, r2);
 }
 
 /// Example function used for borrowing
 fn calculate_length(s: &String) -> usize {
+    // s = &(String::from('a'));
+    // s.push_str("asd");
     s.len()
 }
 
@@ -358,14 +438,21 @@ fn change(some_string: &mut String) {
 }
 
 /// Example function used for references
-// fn dangle() -> &'static String {
+// fn dangle() -> & String {
 //     // This function cannot return because the variable s is dropped at the end of the function.
 //     let s = String::from("hello");
 //     &s
+//     /*
+//     // who owns the data pointed by &s?
+//     //  's' does. and if we return the pointer &s, we do not pass ownership of the data
+//
 //     // DNC :  missing lifetime specifier
 //     // (and there is no lifetime specifier that can make this compile,
 //     // also we'll discuss lifetime in detail later)
+// //     careful! not all error suggestions make sense
+//      */
 // }
+// go back to line 401
 
 /// Example function used for references
 fn no_dangle() -> String {
@@ -381,7 +468,8 @@ fn no_dangle() -> String {
 ///     https://doc.rust-lang.org/book/ch04-03-slices.html
 pub fn slices(){
     // Another type that does not have ownership is the slice.
-    // Slices let you reference a contiguous sequence of elements in a collection rather than the whole collection.
+    // Slices let you reference a contiguous sequence of elements in a collection
+    // rather than the whole collection.
 
     // slicing is done by taking the desired range with square brackets [..],
     // the first interval is inclusive, the second is not
@@ -393,11 +481,11 @@ pub fn slices(){
     // `world` is a reference pointing to the second word of the string.
 
     /* Visually:
-                s                        heap stuff
+                hello                        heap stuff
           | name     | value  |       | index | value |
           | ptr      | ---------------> 0     | h     |
-          | length   | 11     |       | 1     | e     |
-          | capacity | 11     |       | 2     | l     |
+          | length   | 5      |       | 1     | e     |
+          | capacity | 5      |       | 2     | l     |
                                       | 3     | l     |
                                       | 4     | o     |
                 world                 | 5     |       |
@@ -431,17 +519,18 @@ pub fn slices(){
     }
 }
 
+
 pub fn ownership_and_compound(){
     // let's now take a look at ownership and vectors,
     // to study in details how to deal with ownership and compound data types
 
-    let mut v = vec![String::from("something");10];
+    let mut  v = vec![String::from("something");10];
     // QUIZ: can i do this:
     // let first_nonmut = v[0];
     // let sec_nonmut = v[1];
     // Y / N
 
-
+    //
     // DNC: error[E0507]: cannot move out of index of `Vec<String>`
     // the compiler tells us something useful though:
     //      move occurs because value has type `String`, which does not implement the `Copy` trait
@@ -458,7 +547,8 @@ pub fn ownership_and_compound(){
     // println!("First Element: {}",first_mut);
     // nothing: it works // compiler error
 
-
+    // let cheat = &mut first_mut;
+    //
     // DNC: error[E0502]: cannot borrow `v` as immutable because it is also borrowed as mutable
     // the print of first_mut here clashes with the immutabble borrow of v done for second_nonmut
     // instead, this is not a problem for first_nonmut
@@ -474,12 +564,23 @@ pub fn ownership_and_compound(){
     // do not overlap, their ownership is disjoint, the issue is that ownership goes through v ...
     let (v05, v6plus) = v.split_at_mut(6);
     let mut one_mut = v05.get_mut(5).unwrap();
+    one_mut.push('a');
     let mut two_mut = v6plus.get_mut(0).unwrap();
     // the indices ofc change now!
     println!("5: {}, 6: {}",one_mut, two_mut);
 
     // how to merge them back? with concat, applied to an array since
     // arrays can concat() slices to a vector
-    let vv = [v05,v6plus].concat();
+    let mut vv = [v05,v6plus].concat();
+    // vv.push(String::from("asd"));
     println!("{:?} == {:?}",v,vv);
+
+    let xxx = v.get_mut(0).unwrap();
+    let xxxx = v.get(1).unwrap();
+    // println!("P{},{}", xxx,xxxx);
+}
+
+pub fn danglestr() -> &'static str{
+    let ss = "hi";
+    ss
 }

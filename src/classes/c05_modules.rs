@@ -56,7 +56,8 @@ use libtest::pubmod::pubmodfun;
 use libtest::PubEnum as PE;
 /*
 Paths:
-    Using a semicolan after the `mod temp` rather than a block tells rust to load the contents of the module from another file with the same name as the module.
+    Using a semicolon after the `mod temp` rather than a block tells
+    rust to load the contents of the module from another file with the same name as the module.
         See the `main.rs` for usage.
     We can then bring specific definitions into scope with the `use` keyword as above
 
@@ -77,7 +78,8 @@ Paths:
         a crates io package
         a local registry (kellnr, hosted by the uni) package
 
-    We can also depend on a library located in a `git` repository. Your package can depend on any specified version or commit.
+    We can also depend on a library located in a `git` repository.
+    Your package can depend on any specified version or commit.
 
     ```
     [dependencies]
@@ -94,7 +96,7 @@ pub fn externalcall(){
     println!("Got {} and {}", s, ss);
     // we can also declare something of the imported Enum
     let _en = PE::P1;
-    // println!("Enum {:?}",en);
+    // println!("Enum {:?}",_en);
     // DNC: error[E0277]: `PubEnum` doesn't implement `Debug`
     // we can't really print it though,
     // here we can fix it, only because it is local code,

@@ -9,42 +9,32 @@
 ///     testing infrastructure
 // do not care about this line
 use std::io;
-// I -> O
-
-// pub fn test() -> i32 {
-//     let x = 1;
-//     let y =  3+4;
-//     return 5;
-// }
-
 
 /// This function shows Rust variables, assignment and mutability
 pub fn var_ass_mut(){
     /* ==== Variables, Assignments and Mutability ====
        =============================================== */
-
     // variables are defined via keyword `let`
     // variables can have their type annotation, or it can be inferred
-    let x : i32 = 10;       // defines a variable of name x and its type
-    let y = 11;         // variable definition but with type inference
+    let y : i32 = 0;
+    let x = y +1 ;
     println!("Values of x and y: {} and {}", x, y);
 
     // variables can be rebound, though their type **changes**,
     // this is called shadowing
-    let x = "a string?";
+    let x = 'c';
+    println!("Value of x: {}", x);
     // println!("Value of x: {}", x+1);
     // DNC: error[E0369]: cannot add `{integer}` to `&str`
     // DNC == Does Not Compile
-    println!("Value of x: {}", x);
 
     // By default, variables are **immutable**, except you specify it.
-    let y = y+1;
-    // y += 1;
+    let mut y = 0;
+    y += 1;
     // DNC: error[E0384]: cannot assign twice to immutable variable `y`
-    let mut z = 10;     // this is a mutable variable
+    let z = 1;
     println!("Value of z: {}",z);
-    z = z+1;                   // and we can mutate it
-    println!("Value of z: {}",z);
+    println!("Value of z: {}",z+1);
 
     // constants **must** declare their types
     const _TRUE : i32 = 1;
@@ -52,9 +42,7 @@ pub fn var_ass_mut(){
     // the _ underscore before the name tells the rust compiler to not worry about the const usage
 }
 
-// START HERE
-
-pub const _FALSE : i32 = 0;
+const _FALSE : i32 = 0;
 // QUIZ: can i use const FALSE from `src/main.rs` ?
 
 /// This function showcases Rust base and compound types
@@ -93,24 +81,20 @@ pub fn vals_types(){
     /* ==== Compound Types ====
        ======================== */
     //  - Tuples: fixed-size, each field can have its type, allocated on the stack
-    let tuple : (i32,f64,char) = (1, 2.5, 'w');
     // tuples are destructed via pattern-matching or with dot-notation
     // also with pattern matching, as with most things in Rust,
     // you don't need to spell out the types
     // and you can add an `_` before the name if the variable is not going to be used,
     // to avoid warnings
-    let (el1, _el2, _el3) = tuple;
     // when pattern-matching, you can write _ for any element you will not care about
-    let (el01, _, _ ) = tuple;
-    let first = tuple.0;
     // because their types are known statically,
-    // CLion can suggest what fields you can extract from a struct
-    // let last = tuple.        // uncomment and see Clion's suggestions
-    let _last = tuple.2;
-    println!("First element: {} = {} = {}", el1, first, el01);
+    // RR can suggest what fields you can extract from a struct
+    let t = (1,'c',false);
+    let tt = t;
+    let last = t.2;        // uncomment and see RR's suggestions
+    let (a,b,c) = t;
+    println!("First element: {} = {} = {}", a,b,c);
 
-    let mut t = (1,2,'c');
-    t = (1,2,t.2);
 
     //  - Arrays: fixed length, each field has the same type, allocated on the stack
     // the i32 annotation is the type of each field, the 5 annotation is the length
@@ -124,19 +108,10 @@ pub fn vals_types(){
     let a2 = a[1];
     println!("Array Elements: {} and {}", a1, a2);
 
-    let mut aa = [(1,2),(1,4)];
-    println!("Array1 {:?}",aa);
-    aa = [aa[0],(4,5)];
-    println!("Array2 {:?}",aa);
-    aa[1].0 = 3;
-    println!("Array3 {:?}",aa);
-    // QUIZ: cosa viene stampato qui?
-    // [(1, 2), (1, 4)] || [(1, 2), (4, 5)] || [(1, 2), (3, 5)] || [(3, 2), (4, 5)] || [(1, 3), (4, 5)]
-
     // There are **NO** buffer overflows in Rust (in the worst case it'll panic)
     // the length of arrays is always statically known and it cannot be exceeded
     // uncomment this to see the detailed Rust compiler error
-    // let f = a[6];       // DNC: error: this operation will panic at runtime
+    // let a6 = a[7];
 
     // The only case in which an array access panics is when the index
     // is not known/cannot be computed statically
@@ -150,9 +125,7 @@ pub fn vals_types(){
     match trimmed.parse::<u32>() {
         Ok(mut i) => {
             println!("Integer input: {}", i);
-            if i>4 {                            // comment and input 6
-                i = 4;
-            }
+            // if i>4 { i = 4;  } // comment and input 6
             let _element = a[(i as usize)];
             println!("This will not print without the if");
         }
@@ -161,6 +134,16 @@ pub fn vals_types(){
     };
     // What are Ok and Err? They're instances of the Result type,
     // which we discuss in few classes
+
+
+    let mut aa = [(1,2),(1,4)];
+    println!("Array1 {:?}",aa);
+    aa = [aa[0],(4,5)];
+    println!("Array2 {:?}",aa);
+    aa[1].0 = 3;
+    println!("Array3 {:?}",aa);
+    // QUIZ: cosa viene stampato qui?
+    // [(1, 2), (1, 4)] || [(1, 2), (4, 5)] || [(1, 2), (3, 5)] || [(3, 2), (4, 5)] || [(1, 3), (4, 5)]
 }
 
 /// This function showcases Rust expressions and commands
@@ -176,8 +159,7 @@ pub fn expressions(){
         println!("This will never stop");
         c += 1;
         if c == 4 {
-            // breaking is the only way to escape an unguarded loop
-            break;
+            break; // breaking is the only way to escape an unguarded loop
         }
     }
     //  - while loops
@@ -205,7 +187,6 @@ pub fn expressions(){
     let a = [10, 20, 30, 40, 50];
     for element in a.iter() {
         println!("Iteration loop: the value is: {}", element);
-        // element = element + 1;
     }
     // iter - This borrows each element of the collection through each iteration.
     //      Thus leaving the collection untouched and available for reuse after the loop.
@@ -225,7 +206,7 @@ mod testing {
 
     // all functions marked as #[test] can be run with project testing
     #[test]
-    // Ensure you can see the Cargo panel in Clion:
+    // Ensure you can see the Cargo panel in RR:
     //      View -> Tool Windows -> Cargo --> drag it where you want
     //      Click the 'run cargo command' --> type "cargo test" to run all the tests and only them
     //      see the change in the Run icon on the top-right icons menu

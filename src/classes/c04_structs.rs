@@ -14,6 +14,9 @@ struct User {
     sign_in_count: u64,
     active: bool,
 }
+// impl User {
+//     pub fn asd(&self){}
+// }
 
 /// This function showcases Rust structs and how to use them
 pub fn struct_usage(){
@@ -46,9 +49,10 @@ pub fn struct_usage(){
     user1.email = String::new();
     user1.username = String::new();
 
-    // we can access the fields of the struct in this module because this code is defined
-    // together with the struct
-    // QUIZ: if i go into a different file `c04_structshelper`, can i write
+    // we can access the fields of the struct in this module because
+    // this code is defined together with the struct
+    // QUIZ: if i go into a different file `c04_structshelper`,
+    // can i write
     // let x = user1.email;
     // Y / N
 
@@ -86,6 +90,16 @@ pub fn struct_usage(){
         active: user1.active,
         sign_in_count: user1.sign_in_count,
     };
+}
+
+pub fn retu() -> User{
+    let _user5 = User {
+        email: String::from("another@example.com"),
+        username: String::from("anotherusername567"),
+        active: false,
+        sign_in_count: 10,
+    };
+    return _user5;
 }
 
 
@@ -227,16 +241,18 @@ impl Rectangle {
 
 pub fn struct_impl(){
     // this is how functions of a struct are called, i.e., with  ::
-    let r = Rectangle::new();
+    let mut r = Rectangle::new();
     // this is how methods are called
     // note that the `&self` parameter is written in dot notation
     let a = r.area();
-    // r.double();
+    r.double();
     // they can also be written in infix form, but this is strongly discouraged
     let p = Rectangle::perimeter(&r);
     println!("The Rectangle is {:?}",r);
     println!("Area: {} and Perimeter: {}", a, p);
 }
+
+// END
 
 
 // While you learn where each type is stored, use the cheatsheet below
@@ -281,3 +297,22 @@ fn findinv(v : &Vec<i32>) -> i32 {
     }
     return -1;
 }
+
+// trait Asd{
+//     fn new();
+// }
+//
+// trait Frgs{
+//     fn new();
+// }
+//
+// impl Asd for Rectangle {
+//     fn new() {
+//         todo!()
+//     }
+// }
+// impl Frgs for Rectangle{
+//     fn new() {
+//         todo!()
+//     }
+// }

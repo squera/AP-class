@@ -8,11 +8,26 @@
 // This code is not for this class, it is needed for class c04_structs
 use crate::full_files::c04_structs::new_rhombus;
 use crate::full_files::c04_structs::Square;
-use crate::full_files::c04_structs::Rhombus;
+// use crate::full_files::c04_structs::Rhombus;
+use crate::classes::c04_structs::Rhombus;
+use crate::classes::c04_structs::retu;
 fn _showcase_access () {
+    // let a = retu();
+    // a.asd();
+
+    // let s : Square = Square{
+    //     side : 01,
+    // };
+
+
+
     // QUIZ: can i write the following:
     // let rr = Rhombus{ side: 0, acute_angle: 0 };
     // Y/N
+
+
+
+
 
     // DNC: error[E0451]: field `acute_angle` of struct `Rhombus` is private
 

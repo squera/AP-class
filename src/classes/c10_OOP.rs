@@ -1,23 +1,3 @@
-enum asd {
-    A(),
-    B()
-}
-impl asd{
-    pub fn xx(&self) -> String {
-        match self{
-            asd::B() => "b".to_string(),
-            asd::A() => "a".to_string(),
-        }
-    }
-}
-#[test]
-pub fn test(){
-    let a = asd::A();
-    let s = a.xx();
-    println!("{}",s);
-}
-
-
 /// This module shows some KEY concepts of Rust:
 ///     Object Oriented Programming (in Rust)
 /// Some resources:
@@ -148,6 +128,14 @@ impl AveragedCollection {
  */
 
 // Subtyping relates to dynamic dispatch.
+//QUIZ: what Rust feature enables dynamic dispatch?
+// Generics Monomorphisation
+// Static Lifetimes
+// Borrowing Objects
+// Traits
+
+
+//
 // The Rust we've seen for now only has static dispatch,
 // it needs to know the type of all objects statically.
 // For subtyping, we'd need to add some form of
@@ -211,6 +199,8 @@ pub fn example_oop1() {
     let s = "what".to_string();
     // we need to indicate that the vector is for
     // Trait Objects: thus the `dyn`
+
+    // QUIZ: does this compile?
     let v: Vec<&dyn Show> = vec![&answer,&maybe_pi,&s];
     for d in v.iter() {
         println!("show {}",d.show());
@@ -221,14 +211,6 @@ pub fn example_oop1() {
 // with Traits you can really provide representation independence
 // and be sure to expose to your users only those functionalities
 // you dictate, and you want them to use
-
-// in your project, the market will likely have to expose its goods
-// somehow. It may do that, or it may expose them via a Trait,
-// so that any *client* of the market can receive the exposed
-// list of goods in a specific way (a list of some trait),
-// and you regulate what can be called on those elements via the trait
-// (without exposing the full Good API)
-
 
 // So now we've been able to use Trait Objects
 // in order to store stuff of
@@ -293,6 +275,8 @@ fn quack_trait<Q> (q: &Q)
     where Q: Quack {
     q.quack();
 }
+
+
 // The type parameter Q in quack_trait is any type
 // which implements Quack.
 // There's an important difference between quack_trait
@@ -303,7 +287,7 @@ fn quack_trait<Q> (q: &Q)
 // It uses the trait Quack in a different way,
 // as a constraint on generic types.
 // Instead, quack_ref uses Trait Objects,
-// and it'll look up into the paramter Trait object the
+// and it'll look up into the parameter Trait object the
 // v-table where to do the method dispatch for quack();
 
 

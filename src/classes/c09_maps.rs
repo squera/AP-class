@@ -1,5 +1,6 @@
 use std::num::ParseIntError;
 
+
 ///
 /// https://www.newline.co/@kkostov/the-rust-map-function-a-gateway-to-iterators--f991b22b
 
@@ -59,6 +60,8 @@ pub fn lazymap_nocollect(){
     println!("{:?}",result);
     println!("{}",number_of_times);
 }
+// iterator a -> (a->b) -> iterator b
+
 // QUIZ: what will this print?
 
 pub fn string_tolower(){
@@ -72,18 +75,18 @@ pub fn string_tolower(){
     println!("{:?}",words);
 }
 
-pub fn maps_options(){
-    let str_numbers: Vec<&str> = vec!["1", "2", "3", "I am not a number"];
-    let numbers: Vec<Result<u32,ParseIntError>> = str_numbers
-        .iter()
-        // does not compile
-        .map(|str_number| str_number.parse::<u32>())
-        // must use `flat_map`
-        //  https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.flat_map
-        // .flat_map(|str_number| str_number.parse::<u32>())
-        .collect();
-    println!("{:?}",numbers);
-}
+// pub fn maps_options(){
+//     let str_numbers: Vec<&str> = vec!["1", "2", "3", "I am not a number"];
+//     let numbers: Vec<Result<u32,ParseIntError>> = str_numbers
+//         .iter()
+//         // does not compile
+//         .map(|str_number| str_number.parse::<u32>())
+//         // must use `flat_map`
+//         //  https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.flat_map
+//         // .flat_map(|str_number| str_number.parse::<u32>())
+//         .collect();
+//     println!("{:?}",numbers);
+// }
 
 /// https://hermanradtke.com/2015/06/22/effectively-using-iterators-in-rust.html/
 #[derive(Debug)]
@@ -123,20 +126,20 @@ pub fn mapsownership(){
     // pushing moves ownership: vv now owns the nodes
     let mut v2 : Vec<Node> = Vec::new();
     println!("vv {:?}",vv);
-    let r : Vec<()> = vv
-        .iter_mut()
-        .map(|mut el| el.inc_content())
-        .collect();
-    println!("vv {:?}",vv);
-    println!("r {:?}",r);
+    // let r : Vec<()> = vv
+    //     .iter_mut()
+    //     .map(|mut el| el.inc_content())
+    //     .collect();
+    // println!("vv {:?}",vv);
+    // println!("r {:?}",r);
     println!("v2 {:?}",v2);
     // but iter and iter_mut are still borrowing data, not owning it
     // in fact, here we can still print  vv
 
-    let rr : Vec<()> = vv
+    let rr : Vec<_> = vv
         // .iter()  //cannot move
         .into_iter()   // acquires ownership
-        .map(|el| v2.push(el))
+        .map(|el : Node | 6 )
         .collect();
     // println!("vv {:?}",vv);     // passed ownership of vv away
     println!("v2 {:?}",v2);

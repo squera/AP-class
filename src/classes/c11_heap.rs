@@ -47,6 +47,7 @@ pub fn example_box(){
     println!("b's address = {}", b);
     // so if we really need to know the pointer, we need to print it with the pointer formatter:
     println!("b's real address = {:p}", b);
+    println!("b's another address = {:p}", &b);
 }
 
 // let's look at a bigger example
@@ -226,7 +227,7 @@ pub fn example_smart1() {
     println!("I expect 5: {}", x);
     // comment the IMPL below
     // DNC: error[E0614]: type `MyBox<{integer}>` cannot be dereferenced
-    println!("I expect 5: {}", *y);
+    println!("I expect! 5: {}", *y);
     // let's implemen t Deref for Mybox then
     // uncomment the IMPL below, now it work
 }
@@ -281,9 +282,12 @@ pub fn example_drop() {
     let mut c = CustomSmartPointer {
         data: String::from("my stuff"),
     };
-    let d = CustomSmartPointer {
-        data: String::from("other stuff"),
-    };
+    {
+        let d = CustomSmartPointer {
+            data: String::from("other stuff"),
+        };
+        c = d;
+    }
     let p1 = &c;
     let p2 = &c;
     //
@@ -338,6 +342,7 @@ pub fn example_rc(){
                            Rc::new(RcCons(10,
                                           Rc::new(RcNil)))));
     println!("count after creating a = {}", Rc::strong_count(&a));
+
     // When we create b, instead of taking ownership of a, we’ll clone the Rc that a is holding,
     // thereby increasing the number of references from one to two and letting
     // a and b share ownership of the data in that Rc.
@@ -353,17 +358,27 @@ pub fn example_rc(){
         let c = RcCons(4, Rc::clone(&a));
         println!("count after creating c = {}", Rc::strong_count(&a));
     }
+
     println!("count after c goes out of scope = {}", Rc::strong_count(&a));
+
+    let t = Box::new(10);
+    let tt = Rc::new(t);
+    let ttt = (tt.clone());
+    let tttt = (tt.clone());
+    let y = Rc::new(tt);
+    // let yy = Rc::new(tt);
+
 
     // QUIZ: what is the sequence of printed numbers?
     // 1, 2, 3, 4 | 1, 2, 3, 2 | 1, 2, 3 ,3
 
     // The value gets decremented in the implementation of the Drop trait!
-
 }
 
 use std::rc::Rc;
 use self::RcList::{RcCons,RcNil};
+
+// start here
 
 enum RcList {
     RcCons(i32, Rc<RcList>),
@@ -378,7 +393,6 @@ enum RcList {
 // Deref coercion is a convenience that Rust performs on arguments
 // to functions and methods.
 // Deref coercion works only on types that implement the Deref trait.
-// Deref coercion converts such a type into a reference to another type.
 //
 // For example, deref coercion can convert &String to &str because String implements
 // the Deref trait such that it returns &str.
@@ -424,6 +438,7 @@ pub fn implitictderef() {
 // the * operator on immutable references,
 // you can use the DerefMut trait to override
 // the * operator on mutable references.
+
 // Rust does deref coercion when it finds types and
 // trait implementations in three cases:
 //  - From `&T` to `&U` when `T: Deref<Target=U>`
@@ -444,6 +459,8 @@ pub fn implitictderef() {
 // that mutable reference must be the only reference to that data
 // (otherwise, the program wouldn’t compile).
 
+
+
 /* ========== Arc ==========
    ========================= */
 // Similar to Rc, Arc (atomic reference counted) can be used when sharing data across
@@ -453,9 +470,11 @@ pub fn implitictderef() {
 // As it shares ownership between threads,
 // when the last reference pointer to a value is out of scope, the variable is dropped.
 
+
 pub fn arc() {
     use std::sync::Arc;
     use std::thread;
+    use std::thread::sleep;
 
     // This variable declaration is where its value is specified.
     let apple = Arc::new("the same apple");
@@ -463,6 +482,7 @@ pub fn arc() {
     for _ in 0..10 {
         // Here there is no value specification as it is a pointer to a reference in the memory heap.
         let apple = Arc::clone(&apple);
+        // QUIZ: can i replace Arc with Rc?
 
         let tjh = thread::spawn(move || {
             // As Arc was used, threads can be spawned using the value allocated
@@ -471,8 +491,12 @@ pub fn arc() {
             println!("count after creating apple in a thread: {}", Arc::strong_count(&apple));
             // What's going on? See:
             //      https://doc.rust-lang.org/std/sync/struct.Arc.html#method.strong_count
-        });
 
+            // let ten_millis = Duration::from_millis(100);
+            // sleep(ten_millis);
+        });
+        // if we wait for the join, then the count always goes to 2
+        // comment to see the numbers changing
         tjh.join();
     }
 }
@@ -492,7 +516,10 @@ impl<T: Copy> Clone for NaiveRc<T> {
     fn clone(&self) -> Self {
         // QUIZ: does this code compile?
         // Y | N
-        // self.reference_count += 1;
+        //self.reference_count += 1;
+
+
+        //
         // DNC: error[E0594]: cannot assign to `self.reference_count`, which is behind a `&` reference
         // The problem is: clone takes an immutable reference to self, so the reference count can’t be mutated!
         return NaiveRc{
@@ -526,6 +553,13 @@ impl<T: Copy> NaiveRc<T> {
 //Interior mutability is a design pattern in Rust
 // that allows you to mutate data even when there
 // are immutable references to that data;
+// QUIZ: what rust principles dictate this?
+
+
+
+
+//
+//
 // normally, this action is disallowed by the borrowing rules.
 //
 // To mutate data, the pattern uses **unsafe** code inside a data structure
@@ -540,7 +574,7 @@ impl<T: Copy> NaiveRc<T> {
 // single ownership over the data it holds.
 // What makes `RefCell<T>` different from a type like `Box<T>`?
 //
-// QUIZ: recall the borrowing rules we learned in previous lectures:
+// recall the borrowing rules we learned in previous lectures:
 //
 //  - At any given time, you can have either
 // one mutable reference or any number of immutable references.
@@ -584,18 +618,27 @@ use std::cell::RefCell;
 // the refcell API provides borrow_mut and borrow methods
 // to get something of type RefMut or Ref out
 // (these implement Deref and Drop)
-pub fn refcell_usage(){
+pub fn refcell_usage() {
     let refcell = RefCell::new(10);
-    println!("refcell {:?}",refcell,);
+    println!("refcell {:?}", refcell, );
     let mut mptr = refcell.borrow_mut();
-    println!("refcell {:?} + content {}",refcell,*mptr );
+    println!("refcell {:?} + content {}", refcell, *mptr);
     *mptr = 11;
-    println!("refcell {:?} + content {}",refcell,*mptr );
+    println!("refcell {:?} + content {}", refcell, *mptr);
     // uncomment for panic.
-    // let ptr1 = refcell.borrow();
-    // let ptr2 = refcell.borrow();
-    // let ptr3 = refcell.borrow();
-    // println!("refcell {:?} + content {}",refcell,*ptr1 );
+    // mem::drop(mptr);
+    let ptr1 = refcell.borrow();
+    let ptr2 = refcell.borrow();
+    let ptr3 = refcell.borrow();
+    println!("refcell {:?} + content {}",refcell,*ptr1 );
+
+    // QUIZ: how can i call borrow without panicking?
+
+
+    //
+    // wrap the borrow_mut in a scope to force the drop and this can be uncommented
+    // or use
+    // mem::drop(mptr);
 }
 
 pub fn refcell_usage_2(){
@@ -614,6 +657,9 @@ pub fn refcell_usage_2(){
 
 /* == Interior Mutability ==
    ========================= */
+// Recall: Interior mutability is a design pattern in Rust that allows you
+// to mutate data even when there are immutable references to that data
+
 //In this example, we’ll create a library that tracks a value against
 // a maximum value and sends messages based on how close to the maximum value the current value is.
 // This library could be used to keep track of a user’s quota
@@ -700,6 +746,7 @@ pub mod tests {
             // self.sent_messages
             //     .push(String::from(message));
 
+            //
             // DNC: error[E0596]: cannot borrow `self.sent_messages` as mutable, as it is behind a `&` reference
 
             // now this may seem counterintuitive: just change the Trait signature!
@@ -711,17 +758,17 @@ pub mod tests {
 
     // added but not used
     pub fn it_sends_an_over_75_percent_warning_message() {
-        // // We can create a new instance of the mock object,
-        // let mock_messenger = MockMessenger::new();
-        // // create a LimitTracker that uses the mock object,
-        // let mut limit_tracker = LimitTracker::new(&mock_messenger, 100);
-        // // call the set_value method on LimitTracker,
-        // limit_tracker.set_value(80);
-        // // and then check that the mock object has the messages we expect.
-        // // uncomment, and it'll crash
-        // assert_eq!(mock_messenger.sent_messages.len(), 1);
-        //
-        // // This example shows an attempt to do this, but the borrow checker won't allow it.
+        // We can create a new instance of the mock object,
+        let mock_messenger = MockMessenger::new();
+        // create a LimitTracker that uses the mock object,
+        let mut limit_tracker = LimitTracker::new(&mock_messenger, 100);
+        // call the set_value method on LimitTracker,
+        limit_tracker.set_value(80);
+        // and then check that the mock object has the messages we expect.
+        // uncomment, and it'll crash
+        assert_eq!(mock_messenger.sent_messages.len(), 1);
+
+        // This example shows an attempt to do this, but the borrow checker won't allow it.
     }
 }
 // We also can’t take the suggestion from the error text to use &mut self instead,
@@ -779,6 +826,7 @@ pub mod workingtests {
         assert_eq!(mock_messenger.sent_messages.borrow().len(), 1);
     }
 
+    // start here
 
     // When creating immutable and mutable references,
     // we use the & and &mut syntax, respectively.
@@ -799,6 +847,8 @@ pub mod workingtests {
     //
     // Now if we violate the borrowing rules,
     // we'll get an error at compile time rather than at runtime. Here is an example.
+
+    // QUIZ: what trait implementations are needed to express this behaviour?
 
     // uncomment this and comment the other impl Messenger for MockMessenger above
     // impl Messenger for MockMessenger {
@@ -868,11 +918,17 @@ pub mod rc_plus_refcell {
 
          */
         // After we’ve created the lists in a, b, and c, we add 10 to the value in value.
-        // We do this by calling borrow_mut on value, which uses implicit dereferencing
+        // We do this by calling borrow_mut on value,
+        // QUIZ: what Rust feature is used here under the hood?
+        let x = *value.borrow_mut() += 10;
+        //
+        //
+
+        //
+        // which uses implicit dereferencing
         // to dereference the `Rc<T>` to the inner `RefCell<T>` value.
         // The borrow_mut method returns a `RefMut<T>` smart pointer,
         // and we use the dereference operator on it to change the inner value.
-        *value.borrow_mut() += 10;
         // When we print a, b, and c, we can see that they all have the modified value of 15 rather than 5.
         println!("a after = {:?}", a);
         println!("b after = {:?}", b);
@@ -885,6 +941,14 @@ pub mod rc_plus_refcell {
     // The runtime checks of the borrowing rules protect us from data races,
     // and it’s sometimes worth trading a bit of speed for this flexibility in our data structures.
 }
+
+// Smart pointers are Data Pointers
+// think about the C pointer and RC<RefCell< .. >>
+//  and their capabilities
+// certain language features are there to limit the usage of pointers in Rust
+//  and do not limit this in C
+
+
 
 /* === Reference cycles ====
    ========================= */
@@ -916,6 +980,12 @@ pub mod overflow {
                 Nil => None,
             }
         }
+        fn head(&self) -> Option<&i32> {
+            match self {
+                Nil => None,
+                Cons( e, _) => Some(e)
+            }
+        }
     }
 
     pub fn exampleoverflow() {
@@ -923,9 +993,7 @@ pub mod overflow {
 
         println!("a initial rc count = {}", Rc::strong_count(&a));
         println!("a next item = {:?}", a.tail());
-
         let b = Rc::new(Cons(10, RefCell::new(Rc::clone(&a))));
-
         println!("a rc count after b creation = {}", Rc::strong_count(&a));
         println!("b initial rc count = {}", Rc::strong_count(&b));
         println!("b next item = {:?}", b.tail());
@@ -933,12 +1001,14 @@ pub mod overflow {
         if let Some(link) = a.tail() {
             *link.borrow_mut() = Rc::clone(&b);
         }
-
         println!("b rc count after changing a = {}", Rc::strong_count(&b));
         println!("a rc count after changing a = {}", Rc::strong_count(&a));
-
         // Uncomment the next line to see that we have a cycle;
         // QUIZ: What will happen?
+        println!("a next item = {:?}", a.head());
+
+        //
+        // and here?
         // println!("a next item = {:?}", a.tail());
     }
 }
@@ -977,7 +1047,6 @@ pub mod overflow {
 struct Graph<T> {
     nodes: Vec<Node<T>>,
 }
-
 // Each node has an inner value and a list of adjacent nodes it is connected to
 // (through a directed edge).
 struct Node<T>(NodeRef<T>);
@@ -1011,12 +1080,8 @@ impl<T> Node<T> {
 
     // Adds a directed edge from this node to other node.
     fn add_adjacent(&self, other: &Node<T>) {
-        // let x = other.0;/
         (self.0.borrow_mut()).adjacent.push(other.0.clone());
     }
-    // x : Rc
-    // x.clone()
-    // Rc::clone(x)
 }
 
 impl<T> Graph<T> {
@@ -1026,6 +1091,7 @@ impl<T> Graph<T> {
 }
 
 pub fn graphexample() {
+    let r = Rc::new(10);
     // Create some nodes
     let node_1 = Node::new(1);
     let node_2 = Node::new(2);
@@ -1072,7 +1138,10 @@ pub fn graphexample() {
 // you do have to be careful to avoid some bugs the borrow checker would stop you from writing,
 // such as accidentally overwriting the wrapped value:
 use std::cell::Cell;
+use std::time::Duration;
 
+// like RefCell, Cell implements interior mutability:
+// mutation of values in an immutable context.
 fn foo(cell: &Cell<u32>) {
     let value = cell.get();
     cell.set(value * 2);
@@ -1089,12 +1158,25 @@ pub fn cellexamplee() {
     // but we can still change its contents afterwards
     // QUIZ: what will this print?
     println!("cell value : {}", cell.get());
+
+    //
+    // notice the `cell` is not mutable!
 }
+// so the Cell is always mutable
 // In contrast, a RefCell requires you to call borrow or borrow_mut
 // (immutable and mutable borrows) before using it, yielding a pointer to the value.
 // Its borrow semantics are identical to externally mutable variables:
 // you can have either a mutable borrow on the inner value or several immutable borrows,
 // so the kind of bug I mentioned earlier is detected in run-time.
+
+// A significant difference between Cell and RefCell is that
+// Cell<T> requires that the inner value T implements Copy,
+// while RefCell<T> has no such restriction.
+// Often, you won’t want copy semantics on your wrapped types, so you’ll have to use RefCell.
+//
+// Put succinctly,
+//      Cell has Copy semantics and provides values
+//      RefCell has move semantics and provides references.
 
 // we define our Rc with Cell
 struct NaiveRcWithCell<T> {
@@ -1110,7 +1192,6 @@ impl<T> NaiveRcWithCell<T> {
             references: Cell::new(1),
         }
     }
-
     fn references(&self) -> usize {
         self.references.get()
     }
@@ -1133,20 +1214,41 @@ pub fn rcwithcellexample() {
     println!("references after cloning: {:?}", wrapped.references());
     println!("clone references: {:?}", wrapped_clone.references());
 }
+
+
 // Calling borrow or borrow_mut on a mutably borrowed RefCell will cause a panic,
 // as will calling borrow_mut on a immutably borrowed value.
 // This aspect makes RefCell unsuitable to be used in a parallel scenario;
 // you should use a thread-safe type (like a Mutex or a RwLock, for example) instead.
 //
+
+pub mod par{
+    use std::cell::RefCell;
+    use std::sync::{Arc, Mutex};
+    use std::thread;
+
+    pub fn arcmutex() {
+        // let counter = Arc::new(RefCell::new(0));
+        // [DNC] error[E0277]: `RefCell<i32>` cannot be shared between threads safely
+        let counter = Arc::new(Mutex::new(0));
+        let mut handles = vec![];
+
+        for _ in 0..10 {
+            let counter = Arc::clone(&counter);
+            let handle = thread::spawn(move || {
+                let mut num = counter.lock().unwrap();
+                println!("I am thread number {}",num);
+                *num += 1;
+            });
+            handles.push(handle);
+        }
+        for handle in handles {
+            handle.join().unwrap();
+        }
+        println!("Result: {}", *counter.lock().unwrap());
+    }
+}
+
 // A RefCell will stay “locked” until the pointer you received falls out of scope,
 // so you might want to declare a new block scope (ie., { ... }) while working with the borrowed value,
 // or even explicitly drop the borrowed value when you’re done with it, to avoid unpleasant surprises.
-//
-// Another significant difference between Cell and RefCell is that
-// Cell<T> requires that the inner value T implements Copy,
-// while RefCell<T> has no such restriction.
-// Often, you won’t want copy semantics on your wrapped types, so you’ll have to use RefCell.
-//
-// Put succinctly,
-//      Cell has Copy semantics and provides values
-//      RefCell has move semantics and provides references.

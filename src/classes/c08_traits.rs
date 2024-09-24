@@ -5,8 +5,9 @@
 
 /* ======= Generics ========
    ====================== */
-/* We have seen generics already, they are abstract stand-ins for concrete types
-that reduce code duplication, so instead of having to write
+/* We have seen generics already, they are abstract stand-ins
+for concrete types that reduce code duplication,
+so instead of having to write
     Option<i32>
         Some(i32)
     Option<usize>
@@ -62,12 +63,11 @@ impl<T> Point<i32,T>{
     }
 }
 pub fn struct_generic(){
-    let both_integer = Point { x: 5, y: 10 };
-    let both_float = Point { x: 1.0, y: 4.0 };
-    let integer_and_float = Point { x: 5, y: 4.0 };
+    let both_integer : Point<i32,i32> = Point { x: 5, y: 10 };
+    let both_float : Point<f32,f32> = Point { x: 1.0, y: 4.0 };
+    let integer_and_float : Point<i32,f32> = Point { x: 5, y: 4.0 };
     let val1:i32 = *both_integer.x();
-    let val2:i32 = both_integer.xx();
-    // QUIZ: can i call this:
+    let val2:i32 = integer_and_float.xxx();// both_integer.xxx(); // QUIZ: can i call this:
     // let val3 = both_float.xx();
 
     println!("val1 and val2: {} and {}", val1, val2);
@@ -79,6 +79,13 @@ we need to supply type arguments to stuff with type parameters.
 Many languages do this implicitly for us,
 in Rust this happens implicitly most times, but we have syntax to do this explicitly too
  */
+pub fn explicit_type(){
+    let b = String::new();
+    let trimmed = b.trim();
+    match trimmed.parse::<u32>() {
+        _ => ()
+    }
+}
 
 /*
 Monomorphization of Generics:
@@ -140,6 +147,9 @@ fn the_large_one_i16(x: i16, y:i16) -> i16 {if x > y {x} else {y}}
 fn the_large_one_gen_correct<T:PartialOrd>(x: T, y: T) -> T {
     if x > y {x} else {y}
 }
+
+// This is the same difference between existential and universal types
+//
 
 // Let's now see
 //      defining a Trait
@@ -288,8 +298,16 @@ pub fn example_notify(){
     notify_bound(&t);
     // QUIZ: why will this not compile?
     notify_fn2(&t, &t);
-    // notify_bound2(&t, &t);
+    notify_bound2(&t, &t);
 
+    let n = NewsArticle{
+        headline: "Wasps!".to_string(),
+        location: "Povo".to_string(),
+        author: "Patrignani".to_string(),
+        content: "there is a wasp in my attic".to_string()
+    };
+    // notify_fn2(&t, &n);
+    // notify_bound2(&t, &n);
     //
     // DNC: error[E0277]: `Tweet` doesn't implement `std::fmt::Display`
 }
@@ -316,7 +334,7 @@ fn some_function_where<T, U>(t: &T, u: &U) -> i32
 
 // What if we want to return something that implements a certain trait?
 // uncomment the code, and see the errors
-// fn ret_trait_wrong() -> Summary {
+// fn ret_trait_wrong() -> dyn Summary {
 //     let t = Tweet{
 //         username: "Marco".to_string(),
 //         content: "no way jose".to_string(),
@@ -372,6 +390,8 @@ fn some_function_where<T, U>(t: &T, u: &U) -> i32
 // and opt-out bounds (e.g. ?Sized) are not allowed.
 // Furthermore, paths to traits may be parenthesized.
 
+//START HERE
+
 // Due to the opaqueness of which concrete type the value is of,
 // trait objects are dynamically sized types.
 // Trait objects are used behind some type of pointer;
@@ -394,6 +414,11 @@ fn some_function_where<T, U>(t: &T, u: &U) -> i32
 //      compare with Java: always dynamically dispatched
 /// Also see
 ///     https://oswalt.dev/2021/06/polymorphism-in-rust/
+/// in order to see the memory layout of trait objects
+///
+/// Generics: larger binaries, faster code
+/// Trait objects: smaller binaries, indirection
+/// Both: code reuse
 
 // Below we use `Box<dyn Trait>`, a trait object as the return type to solve this problem.
 // For now, just know that
@@ -493,6 +518,8 @@ impl<T: Display + PartialOrd> Pair<T> {
         }
     }
 }
+// compare and contrast: what can we do with something of type T in the first
+// impl, and what can we do in the second one with the same somethings?
 
 /* ==== Deriving Traits ====
    ====================== */
@@ -514,13 +541,12 @@ impl<T: Display + PartialOrd> Pair<T> {
 #[derive(PartialEq, PartialOrd)]
 struct Centimeters(f64);
 // `Inches`, a tuple struct that can be printed
-#[derive(Debug)]
+#[derive(Debug,PartialEq)]
 struct Inches(i32);
 // we are not implementing any trait here, we're just adding code to Inches
 impl Inches {
     fn to_centimeters(&self) -> Centimeters {
         let &Inches(inches) = self;
-
         Centimeters(inches as f64 * 2.54)
     }
 }
@@ -530,7 +556,7 @@ struct Seconds(i32);
 fn example_derivable() {
     let _one_second = Seconds(1);
     // QUIZ: why do these two not compile?
-    //println!("One second looks like: {:?}", _one_second);
+    // println!("One second looks like: {:?}", _one_second);
     // let _this_is_true = (_one_second == _one_second);
 
     // DNC: `Seconds` can't be printed; it doesn't implement the `Debug` trait
@@ -588,6 +614,11 @@ pub fn test () {
     let n = st.f();
 }
 
+//start here
+// pub fn testtt( a : Box<dyn T >) -> T::Item{
+//     todo!();
+// }
+
 /* ===== Super Traits ======
    ====================== */
 // Rust doesn't have "inheritance", but you can define a
@@ -597,6 +628,7 @@ trait Person {
 }
 // Person is a supertrait of Student.
 // Implementing Student requires you to also impl Person.
+// so a Student 'is a' Person
 trait Student: Person {
     fn university(&self) -> String;
 }
@@ -665,10 +697,11 @@ pub fn example_supertraits(){
 
 
 
+
 /* ===== Polymorphism ======
-   ====================== */
+   ========================= */
 // To many people, polymorphism is synonymous with inheritance.
-// They're wrong.
+// They're wrong. ish.
 // But it’s actually a more general concept that refers
 // to code that can work with data of multiple types.
 //

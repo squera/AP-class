@@ -12,21 +12,22 @@
 // Let’s say you try to store a reference in a struct without specifying lifetimes, like this, which **won’t work**:
 
 // uncomment struct and function
-// struct User {
-//     username: &str,
-//     email: &str,
-//     sign_in_count: u64,
-//     active: bool,
-// }
+struct User<'a> {
+    username: &'a str,
+    email: &'a str,
+    sign_in_count: u64,
+    active: bool,
+}
 //
-// pub fn lifetime_test() {
-//     let user1 = User {
-//         email: "someone@example.com",
-//         username: "someusername123",
-//         active: true,
-//         sign_in_count: 1,
-//     };
-//     // DNC: error[E0106]: missing lifetime specifier
+pub fn lifetime_test() {
+    let user1 = User {
+        email: "someone@example.com",
+        username: "someusername123",
+        active: true,
+        sign_in_count: 1,
+    };
+// }
+//  s   // DNC: error[E0106]: missing lifetime specifier
 //
 //     // The lifetime of a variable starts at the time when the variable is defined and ends after the last time that the variable is used.
 //     //
@@ -35,53 +36,90 @@
 //     // each scope defines a new lifetime  (lifetimes are specified with a preceding '  "tick"
 //     // QUIZ: does this code respect lifetimes?
 //     // Y/N
-//     // {
-//     //     let r;            // ---------+-- 'a
-//     //                             //          |
-//     //     {                       //          |
-//     //     let x = 5;         // -+-- 'b  |
-//     //     r = &x;                 //  |       |
-//     //     }                       // -+       |
-//     //                             //          |
-//     //     println!("r: {}", r);   //          |
-//     // }                           // ---------+
+    {
+        let r: i32 = 0;         // ---------+-- 'a
+                                //          |
+        {                       //          |
+        let mut x : &i32 = &5;  // -+-- 'b  |
+        x = &r;                 //  |       |
+            // println!("{}",x);
+        }                       // -+       |
+                                //          |
+        println!("r: {}", r);   //          |
+    }                           // ---------+
+//     // Y/N
+
+
+    // {
+    //     let r;             // ---------+-- 'a
+    //                             //          |
+    //     {                       //          |
+    //         let x = 5;      // -+-- 'b  |
+    //         r = &x;             //  |       |
+    //     }                       // -+       |
+    //                             //          |
+    //     println!("r: {}", r);   //          |
+    // }                           // ---------+
+}
+
+
+
+
 //     // DNC: error[E0597]: `x` does not live long enough
 // }
+
+// start 20 / sept
 
 // Lifetime of a reference is not always explicit. For example:
 // uncomment this function
 // fn longest(x:&str, y:&str) -> &str {
 //     if x.len() > y.len() { x } else { y}
-// } // this funcion doesn't work
+// } // this function doesn't work
 // DNC: error[E0106]: missing lifetime specifier
-// When running this function, Rust doesn't know the lifetime of `x` and `y`. The following situation may happen:
+// When running this function, Rust doesn't know the lifetime of `x` and `y`.
+// The following situation may happen:
 
 // uncomment this function
-// pub fn uselongest() {
-//     let x = String::from("hi");
-//     let z;
-//     {
-//         let y = String::from("there");
-//         z = longest(&x,&y); //will be &y
-//     } //drop y, and thereby z
-//     println!("z = {}",z);//yikes!
-// }
-// To fix it, we need to explicitly specify that  `x` and `y` must have the same lifetime, and the returned reference shares it.
-// This can be done using the apostrophe `'` followed by a lowercase, like generic types. By convention, we use `'a`.
+pub fn uselongest() {
+    let x = String::from("hi");
+
+    {
+        let z;
+        let y = String::from("there");
+        z = correct_longest(&x,&y); //will be &y
+
+        println!("z = {}",z);//yikes!
+    } //drop y, and thereby z
+}
+// To fix it, we need to explicitly specify that  `x` and `y` must have
+// the same lifetime, and the returned reference shares it.
+// This can be done using the apostrophe `'` followed by a lowercase,
+// like generic types. By convention, we use `'a`.
 //
 // &i32        // a reference
 // &'a i32     // a reference with an explicit lifetime
 // &'a mut i32 // a mutable reference with an explicit lifetime
 //
 // So, the problem of the previous `longest()` definition is
-// that that function may return `x` or `y`, so Rust cannot tell what's the exact lifetime of the return value.
-// To solve this, we need to tell Rust explicitly that `x` and `y` need to have the same lifetime,
+// that that function may return `x` or `y`, so Rust cannot tell
+// what's the exact lifetime of the return value.
+// To solve this, we need to tell Rust explicitly that `x` and `y`
+// need to have the same lifetime,
 // or we will return the one with the shorter lifetime.
 // Lifetimes on function or method parameters are called *input lifetimes*,
 // and lifetimes on return values are called *output lifetimes*.
 //
 fn correct_longest<'a>(x:&'a str, y:&'a str) -> &'a str {
     if x.len() > y.len() { x } else { y }
+}
+
+// lifetimes are types, so trying to m
+fn another_longest<'a,'b>(x:&'a str, y:&'b str) -> &'b str {
+    // QUIZ: does this compile?
+    // return
+        if x.len() > y.len() { x } else { y };
+//  error: lifetime may not live long enough
+    return y;
 }
 // Note:
 // - Each reference to a value of type `t` has a `lifetime parameter`.
@@ -115,12 +153,20 @@ fn correct_longest<'a>(x:&'a str, y:&'a str) -> &'a str {
 // - You can't. The compiler will (always) figure it out
 //
 // - How does lifetime subsumption work?
-// - If lifetime `'a` is longer than `'b`, we can use `'a` where `'b` is expected; can require this with `'b: 'a`.
+// - If lifetime `'a` is longer than `'b`, we can use
+// `'a` where `'b` is expected; can require this with `'b: 'a`.
 // - Permits us to call `longest(&x,&y)` when `x` and `y` have different lifetimes, but one outlives the other.
 
 fn outliving_longest<'b, 'a: 'b>(x:&'a str, y:&'b str) -> &'b str {
     if x.len() > y.len() { x } else { y}
 }
+// why is this ok?
+// because the return type says how the returned value will be used.
+// it will be used for some lifetime b, so it's ok to return something that may live longer.
+
+// the converse would not be correct though!
+
+
 // We can also use lifetimes in data definitions, and we see this later when we define structs, enums, etc.
 //
 //
@@ -130,15 +176,15 @@ fn outliving_longest<'b, 'a: 'b>(x:&'a str, y:&'b str) -> &'b str {
 //      http://blog.pnkfx.org/blog/2019/06/26/breaking-news-non-lexical-lifetimes-arrives-for-everyone
 // Rust has been updated to support NLL --
 //  lifetimes that end before the surrounding scope:
-fn nll() {                                          // SCOPE TREE
-    let mut names =                        // +- `names` scope start
+fn nll() {                                           // SCOPE TREE
+    let mut names =                         // +- `names` scope start
         ["abe", "beth", "cory", "diane"];           // |
                                                     // |
     let alias = &mut names[0];            // | +- `alias` scope start
                                                     // | |
-    *alias = "alex";                                // <------------------------ write to `*alias`
+    *alias = "alex";  // <------------------------ write to `*alias`
                                                     // | |
-    println!("{}", names[0]);                       // <--------------- read of `names[0]`
+    println!("{}", names[0]);  // <--------------- read of `names[0]`
                                                     // | |
                                                     // | +- `alias` scope end
                                                     // +- `name` scope end
@@ -147,18 +193,20 @@ fn nll_example() {
     let mut s = String::from("hello");
     let r1 = &s;
     let r2 = &s;
+
+    let r3 ;
     println!("{} and {}", r1, r2);
+    r3 = &mut s;
     // r1 and r2 are no longer used after this point
     // QUIZ: can i do this ?
-    let r3 = &mut s;
     println!("{}", r3);
 }
 
 // So how do we use references in struct definition?
-//
-struct Good_User<'a> {
+// we need lifetime annotations in structs
+struct Good_User<'a, 'b> {
     username: &'a str,
-    email: &'a str,
+    email: &'b str,
     sign_in_count: u64,
     active: bool,
 }
@@ -169,4 +217,46 @@ fn use_lifetimes() {
         active: true,
         sign_in_count: 1,
     };
+}
+
+// this struct defines a lifetime parameter,
+// we can only instantiate it with a str that is already valid
+struct ImportantExcerpt<'a> {
+    part: &'a str,
+}
+
+fn main() {
+    let novel = String::from("Call me Ishmael. Some years ago...");
+    let first_sentence = novel.split('.').next().expect("Could not find a '.'");
+    // this creates an instance of the ImportantExcerpt struct that holds a reference
+    // to the first sentence of the String owned by novel. The data in novel exists before
+    // the ImportantExcerpt instance is created. In addition, novel doesn’t go out of
+    // scope until after the ImportantExcerpt goes out of scope, so the reference
+    // in the ImportantExcerpt instance is valid.
+    let i = ImportantExcerpt {
+        part: first_sentence,
+    };
+
+    // in this example,
+    // error[E0597]: `another` does not live long enough
+    // let mut second : &str = "asd";
+    // {
+    //     let another = String::from("Call me Ishmael. Some years ago...");
+    //     second = another.split('a').next().expect("what");
+    // }
+    // let ii = ImportantExcerpt{
+    //     part : second
+    // };
+}
+
+impl<'a> ImportantExcerpt<'a> {
+    // QUIZ: do i need the lifetime annotation here on &self?
+    fn level(&self) -> i32 {
+        3
+    }
+    // QUIZ: do i need the lifetime annotation here ?
+    fn announce_and_return_part(&self, announcement: &str) -> &str {
+        println!("Attention please: {}", announcement);
+        self.part
+    }
 }

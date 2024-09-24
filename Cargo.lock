@@ -30,9 +30,9 @@ dependencies = [
 
 [[package]]
 name = "kellnrtest"
-version = "0.1.4"
+version = "0.1.5"
 source = "registry+git://advancedprogramming.disi.unitn.it/index"
-checksum = "6b0e34bd64e674458459e16ae73c805c1c87f04004a82cf21e601cd0b8df4a37"
+checksum = "85ec5490ab8e2fbb0b2f96144bfafb5cb7a5cfe11b69d4e807c2e1b13117f5d7"
 
 [[package]]
 name = "leaflib"

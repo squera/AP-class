@@ -51,17 +51,20 @@ pub mod closures{
         println!("closure_inferred: {:?}", closure_inferred(i));
 
         // A closure taking no arguments which returns an `i32`.
-        // The return type is inferred.
         let one = || -> i32 { 1 };
         println!("closure returning one: {}", one());
 
-        // Closures they are usually short and relevant only within a narrow context
+        // Closures are usually short and relevant only within a narrow context
         // rather than in any arbitrary scenario.
         // Within these limited contexts, the compiler is reliably able to infer the types
         // of the parameters and the return type, similar to how it’s able to infer the types of most variables.
 
         // Closures (and functions) can be used as inputs and as output to other functions
-        // this makes the language:
+        // QUIZ: this makes the language:
+
+
+
+
         //      higher-order
         let closure = |x : i32| -> i32 { println!("I'm a closure with {}! ", x);x };
 
@@ -94,25 +97,26 @@ pub mod closures{
 
     pub fn capturingexample(){
         use std::mem;
-
-        let color = String::from("green");
-        // A closure to print `color` which immediately borrows (`&`) `color` and
+// A closure to print `color` which immediately borrows (`&`) `color` and
         // stores the borrow and closure in the `print` variable. It will remain
         // borrowed until `print` is used the last time.
         //
         // `println!` only requires arguments by immutable reference so it doesn't
         // impose anything more restrictive.
-        // LOOK CLOSELY! the body of the closure is referring to color!
+        // LOOK CLOSELY! the body of the print closure is referring to color!
+
+        let color = String::from("green");
         let print2 = |color:String| {println!("{}",color);};
         // < fn print2, [] >
         let print23 = || {
             let color = "wghat".to_string();
             println!("{}",color);
+            // return || {return 0;}
         };
         // < fn print3, [] >
+
         let print = || { println!("`color`: {}", color) };
         // < fn print, [ color -> "green" ]>
-
         // Call the closure using the borrow.
         print();
 
@@ -161,7 +165,7 @@ pub mod closures{
         // A non-copy must move and so `movable` immediately moves into
         // the closure.
         let consume = || {
-            println!("`movable`: {:?}", movable);
+            println!("`movable`: {:?}", &movable);
             *movable = 5;
             mem::drop(movable);
         };
@@ -196,7 +200,7 @@ pub mod closures{
     // This is because if a move is possible,
     // then any type of borrow should also be possible.
     // Note that the reverse is not true.
-    // If the parameter is annotated as Fn, then capturing variables by &mut T or T are not allowed.
+    // If the closure is annotated as Fn, then capturing variables by &mut T or T are not allowed.
 
     // let's look at an example
 
@@ -240,30 +244,34 @@ pub mod closures{
             println!("I said {}.", greeting);
             // Mutation forces `farewell` to be captured by
             // mutable reference. Now requires `FnMut`.
-            farewell.push_str("!!!");
+            // farewell.push_str("!!!");
             println!("Then I screamed {}.", farewell);
             println!("Now I can sleep. zzzzz");
             // Manually calling drop forces `farewell` to
             // be captured by value. Now requires `FnOnce`.
-            mem::drop(farewell);
+            // mem::drop(farewell);
         };
 
         // Call the function which applies the closure.
-        apply_FnOnce(diary);
+        // QUIZ: which one compiles?
+        // apply_FnOnce(diary);
+        // apply_FnMut(diary);
+        apply_Fn(diary);
 
+        //
+        //
         let _reb = &greeting;
 
         // uncomment below:
         // DNC: error[E0525]: expected a closure that implements the `FnMut` trait, but this closure only implements `FnOnce`
         // QUIZ: what do i need to comment in the code of `diary` to make this work
-        // apply_FnMut(diary);
+        apply_FnMut(diary);
 
         //
         // if we comment the `mem::drop``, and the previous usage, this works
         // uncomment below
         // DNC: error[E0525]: expected a closure that implements the `Fn` trait, but this closure only implements `FnOnce`
-        // QUIZ: what do i need to comment in the code of `diary` to make this work
-        // apply_Fn(diary);
+        //
 
         //
         // we need to comment both the `mem::drop` and the `farewell.push` to make this go
@@ -294,7 +302,9 @@ pub mod closures{
     // see the impl in the return type
     fn create_fn() -> impl Fn() {
         let text = "Fn".to_owned();
-        move || println!("This is a: {}", text)
+        return move || {
+            println!("This is a: {}", text);
+        };
     }
 
     fn create_fnmut() -> impl FnMut() {
@@ -306,6 +316,8 @@ pub mod closures{
         let text = "FnOnce".to_owned();
         move || println!("This is a: {}", text)
     }
+
+    //start here
 
     pub fn closures_output(){
         let fn_plain = create_fn();
@@ -347,18 +359,19 @@ pub mod closures{
         println!("imperative style: {}", acc);
 
         // Functional approach
-        let sum_of_squared_odd_numbers: u32 =
+        let sum_of_squared_odd_numbers: Vec<_> =
             // again, from 0 to infinity
             (0..).
                 // All natural numbers squared
-                map(|n| n * n)
+                map(|n| { n * n })
+                .collect();
                 // Below upper limit: stop when reaching over upper
-                .take_while(|&n_squared| n_squared < upper)
-                // keep only those that are odd
-                .filter(|&n_squared| is_odd(n_squared))
-                // Sum them
-                .fold(0, |acc, n_squared| acc + n_squared);
-        println!("functional style: {}", sum_of_squared_odd_numbers);
+                // .take_while(|&n_squared| { n_squared < upper })
+                // // keep only those that are odd
+                // .filter(|&n_squared| { is_odd(n_squared) })
+                // // Sum them
+                // .fold(0, |acc, n_squared| acc + n_squared);
+        // println!("functional style: {}", sum_of_squared_odd_numbers);
     }
 
 }
@@ -437,6 +450,8 @@ pub mod iterators{
         let mut v1_iter = v1.iter();
         // QUIZ: what does v1_iter.next() return?
 
+        //
+        //
         assert_eq!(v1_iter.next(), Some(&1));
         assert_eq!(v1_iter.next(), Some(&2));
         assert_eq!(v1_iter.next(), Some(&3));
@@ -467,6 +482,9 @@ pub mod iterators{
         // We aren’t allowed to use v1_iter after the call to sum because sum takes ownership of the iterator we call it on.
         // let v2 = v1_iter.next();
 
+        // QUIZ: what will be the first parameter of sum ?
+        // self / &self / &mut self
+
         assert_eq!(total, 6);
 
         // Another kind of method is known as an iterator adaptor,
@@ -482,11 +500,10 @@ pub mod iterators{
         // The reason for this is that iterator adaptors are lazy,
         // and will only consume the iterator when needed.
         let v1: Vec<i32> = vec![1, 2, 3];
-        v1.iter().map(|x| x + 1);
+        v1.iter().map(|x| { x + 1 });
 
         // We can finish this example as shown below.
-
-        let v2: Vec<_> = v1.iter().map(|x| x + 1).collect();
+        let v2: Vec<_> = v1.iter().map(|x| { x + 1 }).collect();
 
         assert_eq!(v2, vec![2, 3, 4]);
     }
@@ -512,7 +529,8 @@ pub mod iterators{
     // to iterate over a collection of Shoe struct instances.
     // It will return only shoes that are the specified size.
     fn shoes_in_size(shoes: Vec<Shoe>, shoe_size: u32) -> Vec<Shoe> {
-        shoes.into_iter().filter(|s| s.size == shoe_size).collect()
+        let f = |s : &Shoe| { s.size == shoe_size };
+        shoes.into_iter().filter(f).collect()
     }
 
     pub fn filters_by_size() {
@@ -554,7 +572,7 @@ pub mod iterators{
     //
     pub fn examplefpiterators() {
         let vector = [1, 2, 3];
-        let result = vector.iter().map(|x| x * 2).collect::<Vec<i32>>();
+        let result = vector.iter().map(|x| { x * 2 }).collect::<Vec<i32>>();
         // another way to write the above statement
         /*let result: Vec<i32> = vector.iter().map(|x| x * 2).collect();*/
         println!("After mapping: {:?}", result);
@@ -622,6 +640,7 @@ pub mod iterators{
         // QUIZ: what will counter.next be?
         // 0 | 1 | Some(1) | Some(0) | None
 
+        //
         assert_eq!(counter.next(), Some(1));
         assert_eq!(counter.next(), Some(2));
         assert_eq!(counter.next(), Some(3));
@@ -637,23 +656,26 @@ pub mod iterators{
     // we can use various other methods associated with the iterator trait.
     //
     pub fn using_other_iterator_trait_methods() {
-        // QUIZ: 6 groups: read up
+        // QUIZ: group up- read up
         //      skip , zip , map , filter , sum
-        // 5 groups explain what each thing does to its input and thus their output
-        // 1 group tells the final result
+        // explain what each thing does to its input and thus their output
         let sum: u32 = Counter::new()
-            // zip is an iterator that iterates over 2 other iterators, in this case
-            //      Counter::new   and  Counter::new().skip
+            /* zip is an iterator that iterates over 2 other iterators, in this case
+                  Counter::new   and  Counter::new().skip
+             */
             .zip(Counter::new().skip(1))
-            // multiply each element of the 2 iterators
-            // 0*1 | 1*2 | 2*3 | 3*4 | 4 * 5
-            // 0 | 2 | 6 | 12 | 20
+            /* multiply each element of the 2 iterators
+            0*1 | 1*2 | 2*3 | 3*4 | 4 * 5
+            0 | 2 | 6 | 12 | 20
+             */
             .map(|(a, b)| a * b)
-            // keep only those numbers in that can be divided by 3
+            /*keep only those numbers in that can be divided by 3
+             */
             .filter(|x| x % 3 == 0)
-            // add all the numbers
+            /*add all the numbers
+             */
             .sum();
-        assert_eq!(18, sum);
+        println!("{}",sum);
     }
 
 

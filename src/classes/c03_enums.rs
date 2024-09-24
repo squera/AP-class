@@ -8,7 +8,8 @@
 
 // enums define a type that has multiple possible variants.
 // Enums are a feature in many languages, but their capabilities differ in each language.
-// Rust’s enums are most similar to algebraic data types in functional languages, such as F#, OCaml, and Haskell.
+// Rust’s enums are most similar to algebraic data types in functional languages,
+// such as F#, OCaml, and Haskell.
 
 // the `IpAddrKind` enum defines 2 different values: `V4` and `V6`
 pub enum IpAddrKind {
@@ -71,10 +72,11 @@ enum Option<T> {
 // let's look at Option usages
 pub fn option(){
     // here we instantiate the type parameter T with i8
-    // it is kind of like calling functions: T is a formal parameter and its actual parameter here is i8
+    // it is kind of like calling functions: T is a formal parameter
+    // and its actual parameter here is i8
     // Note that `Option<T>` is not the same type as `T`.
     let x: i8 = 5;
-    let y: Option<i8> = Some(5);
+    let y: Option<i8> = None; //Some(5);
     // QUIZ: can i do:
     // let sum = x + y;
 
@@ -86,14 +88,18 @@ pub fn option(){
     // Option<i8> is like String, Vec, Bool, it is effectively another type,
     // look where it is placed in the syntax, right after the " : "
     //
-    // options have a number of specific destructors and error handling methods
-    // if nopt.is_none() {
-    //     println!("This is None");
-    // }
+    // // options have a number of specific destructors and error handling methods
+    let nopt : Option<i32> = None;
+    let opt = Some(10);
+    if nopt.is_none() {
+        // let v = nopt.unwrap();
+    }
+
+
     // QUIZ: what will these expressions do?
-    // let v = nopt.unwrap();
-    // let v = opt.unwrap();
-    // println!("Some of {}",v);
+    // let xxv = nopt.unwrap();
+    let v = opt.unwrap();
+    // println!("Some of {}",None);
 
 
     // RTE: thread 'main' panicked at 'called `Option::unwrap()` on a `None` value'
@@ -131,13 +137,14 @@ pub fn patternmatching(){
         // matches any V6
         IpAddr::V6(a) => println!("Is V6"),
         // the " _ " matches anything
-        _ => println!(" catch all")
+        _ => println!(" errror")
     };
     // pattern-matching can return values, so it can be used to set variables
     let _variable = match loopback {
         IpAddr::V4(127, b, c, d) => Some(loopback),
         _ => None
     };
+    // Q : what is the type of `_variable` ?
     let firstfield = match IpAddr::V4(10,20,30,40){
         IpAddr::V4(a,_,_,_) => a,
         _ => 0,
@@ -175,6 +182,7 @@ pub fn patternmatching(){
     // .ok_or_else
     // .zip
 }
+
 
 /// This function showcases Rust errors
 /// See
@@ -265,6 +273,12 @@ pub fn errors() {
 fn qm() -> Option<i32> {
     // look at the type of the return: it's an option
     // same type of retn
+    let x : Result<(),()> = Ok(());
+    // let xx = x?;
+    // let xx = match x {
+    //     Ok(a) => a,
+    //     Err(e) => return Err(e),
+    // };
     let r = retop()?;
     let r = match retop(){
         Some(z) => z,
@@ -287,6 +301,14 @@ fn retop() -> Option<String>{
 fn retn() -> Option<i32> {
     return None;
 }
+
+
+
+// END
+
+
+
+
 
 
 //
