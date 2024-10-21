@@ -157,15 +157,15 @@ pub fn example_box_long() {
 
 enum List {
     // comment, uncomment
-    // Cons(i32, List),
-    Cons(i32, Box<List>),
+    Cons(i32, List),
+    // Cons(i32, Box<List>),
     Nil,
 }
 // Then we can create our list as shown below.
 use self::List::{Cons,Nil};
 pub fn recursivetypes(){
-    // let list = Cons(1, Cons(2, Cons(3, Nil)));
-    let list = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
+    let list = Cons(1, Cons(2, Cons(3, Nil)));
+    // let list = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
 
 }
 // DNC: error[E0072]: recursive type `List` has infinite size
@@ -226,21 +226,23 @@ pub fn example_smart1() {
     // QUIZ: what does the second println print?
     println!("I expect 5: {}", x);
     // comment the IMPL below
-    // DNC: error[E0614]: type `MyBox<{integer}>` cannot be dereferenced
     println!("I expect! 5: {}", *y);
-    // let's implemen t Deref for Mybox then
-    // uncomment the IMPL below, now it work
+
+    //
+    // DNC: error[E0614]: type `MyBox<{integer}>` cannot be dereferenced
+    // let's implement Deref for Mybox then
+    // uncomment the IMPL below, now it works
 }
 
-impl<T> Deref for MyBox<T> {
-    type Target = T;
-    // type Target = i32;
-
-    fn deref(&self) -> &Self::Target {
-        &self.el
-        // &self.idx
-    }
-}
+// impl<T> Deref for MyBox<T> {
+//     type Target = T;
+//     // type Target = i32;
+//
+//     fn deref(&self) -> &Self::Target {
+//         &self.el
+//         // &self.idx
+//     }
+// }
 //Without the Deref trait, the compiler can only dereference & references.
 // The deref method gives the compiler the ability to take a value
 // of any type that implements Deref and call the deref method
@@ -302,6 +304,22 @@ pub fn example_drop() {
 // usually you would specify the cleanup code that
 // your type needs to run rather than a print message.
 
+// But WHEN do i need this ?
+// - You're implementing a Rust interface on top of a native OS resource,
+//   like file handles or network sockets.
+//   When the Rust-side value is dropped, you need to tell the OS to destroy
+//   the resource.
+// - You're implementing a Rust interface on top of some third-party library.
+//   Consider something like SQLite, libpcap, etc.
+//   You want to clean up the resource in that library when the Rust handle
+//   is dropped.
+// - You're implementing a guard, like RefCell or Mutex guards.
+//   When the guard is dropped, you need to adjust a reference count
+//   or release a lock.
+// - You're implementing a connection pool.
+//   When a pooled connection is dropped, you want to return the connection
+//   to the pool so that it can be reused later.
+// - You are logging information.
 
 /* ========== Rc ===========
    ========================= */
@@ -329,8 +347,9 @@ pub fn example_drop() {
 // we'll see an example of mutability inside an Rc later
 
 pub fn example_rc(){
-    let a = Cons(5, Box::new(Cons(10, Box::new(Nil))));
-    let b = Cons(3, Box::new(a));
+    // uncomment these 3 lines
+    // let a = Cons(5, Box::new(Cons(10, Box::new(Nil))));
+    // let b = Cons(3, Box::new(a));
     // let c = Cons(4, Box::new(a));
     // DNC: error[E0382]: use of moved value: `a`
 
@@ -360,6 +379,11 @@ pub fn example_rc(){
     }
 
     println!("count after c goes out of scope = {}", Rc::strong_count(&a));
+    // QUIZ: what is the sequence of printed numbers?
+    // 1, 2, 3, 4 | 1, 2, 3, 2 | 1, 2, 3 ,3
+
+    //
+    // The value gets decremented in the implementation of the Drop trait!
 
     let t = Box::new(10);
     let tt = Rc::new(t);
@@ -367,18 +391,10 @@ pub fn example_rc(){
     let tttt = (tt.clone());
     let y = Rc::new(tt);
     // let yy = Rc::new(tt);
-
-
-    // QUIZ: what is the sequence of printed numbers?
-    // 1, 2, 3, 4 | 1, 2, 3, 2 | 1, 2, 3 ,3
-
-    // The value gets decremented in the implementation of the Drop trait!
 }
 
 use std::rc::Rc;
 use self::RcList::{RcCons,RcNil};
-
-// start here
 
 enum RcList {
     RcCons(i32, Rc<RcList>),

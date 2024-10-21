@@ -201,7 +201,7 @@ pub fn example_oop1() {
     // Trait Objects: thus the `dyn`
 
     // QUIZ: does this compile?
-    let v: Vec<&dyn Show> = vec![&answer,&maybe_pi,&s];
+    let v: Vec<&dyn Show> = vec![&answer, &maybe_pi, &s];
     for d in v.iter() {
         println!("show {}",d.show());
         // d.to

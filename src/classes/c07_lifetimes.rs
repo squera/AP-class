@@ -18,6 +18,20 @@ struct User<'a> {
     sign_in_count: u64,
     active: bool,
 }
+struct User2 {
+    username: &'static str,
+    email: &'static str,
+    sign_in_count: u64,
+    active: bool,
+}
+
+struct IntUser<'a> {
+    username: &'a i32,
+    email: &'a i32,
+    sign_in_count: u64,
+    active: bool,
+}
+
 //
 pub fn lifetime_test() {
     let user1 = User {
@@ -26,7 +40,13 @@ pub fn lifetime_test() {
         active: true,
         sign_in_count: 1,
     };
-// }
+    let user2 = User2 {
+        email: "someone@example.com",
+        username: "someusername123",
+        active: true,
+        sign_in_count: 1,
+    };
+    // code
 //  s   // DNC: error[E0106]: missing lifetime specifier
 //
 //     // The lifetime of a variable starts at the time when the variable is defined and ends after the last time that the variable is used.
@@ -68,7 +88,9 @@ pub fn lifetime_test() {
 //     // DNC: error[E0597]: `x` does not live long enough
 // }
 
-// start 20 / sept
+// start 30 / sept
+// project out after class:
+// lifetimes and generic type parameters
 
 // Lifetime of a reference is not always explicit. For example:
 // uncomment this function
@@ -157,6 +179,11 @@ fn another_longest<'a,'b>(x:&'a str, y:&'b str) -> &'b str {
 // `'a` where `'b` is expected; can require this with `'b: 'a`.
 // - Permits us to call `longest(&x,&y)` when `x` and `y` have different lifetimes, but one outlives the other.
 
+fn what<'a, 'b, 'c> (x : &'a str, y : &'b str) -> &'c str{
+
+    return "Asd";
+}
+
 fn outliving_longest<'b, 'a: 'b>(x:&'a str, y:&'b str) -> &'b str {
     if x.len() > y.len() { x } else { y}
 }
@@ -200,7 +227,32 @@ fn nll_example() {
     // r1 and r2 are no longer used after this point
     // QUIZ: can i do this ?
     println!("{}", r3);
+
 }
+
+pub fn testintuser(){
+    let i = 5;
+    let j = 10;
+
+    let user = IntUser {
+        email: &i,
+        username: &i,
+        active: true,
+        sign_in_count: 1,
+    };
+    {
+        let k = 20;
+
+        let user2 = IntUser {
+            email: &i,
+            username: &k,
+            active: true,
+            sign_in_count: 1,
+        };
+    }
+}
+
+
 
 // So how do we use references in struct definition?
 // we need lifetime annotations in structs
@@ -225,7 +277,7 @@ struct ImportantExcerpt<'a> {
     part: &'a str,
 }
 
-fn main() {
+pub fn main() {
     let novel = String::from("Call me Ishmael. Some years ago...");
     let first_sentence = novel.split('.').next().expect("Could not find a '.'");
     // this creates an instance of the ImportantExcerpt struct that holds a reference
@@ -247,16 +299,20 @@ fn main() {
     // let ii = ImportantExcerpt{
     //     part : second
     // };
+
+    // uncomment after quizzes in impl below
+    // let x = i.announce_and_return_part("asd");
+    // println!("{}A", x);
 }
 
 impl<'a> ImportantExcerpt<'a> {
     // QUIZ: do i need the lifetime annotation here on &self?
-    fn level(&self) -> i32 {
-        3
-    }
+    // fn level(&self) -> i32 {
+    //     3
+    // }
     // QUIZ: do i need the lifetime annotation here ?
-    fn announce_and_return_part(&self, announcement: &str) -> &str {
-        println!("Attention please: {}", announcement);
-        self.part
-    }
+    // fn announce_and_return_part(&self, announcement: &str) -> &str {
+    //     println!("Attention please: {}", announcement);
+    //     self.part
+    // }
 }

@@ -57,6 +57,11 @@ impl Point<i32,i32>{
         0
     }
 }
+impl Point<f32,f32>{
+    fn xx(&self) -> i32 {
+        0
+    }
+}
 impl<T> Point<i32,T>{
     fn xxx(&self) -> i32 {
         0
@@ -67,7 +72,8 @@ pub fn struct_generic(){
     let both_float : Point<f32,f32> = Point { x: 1.0, y: 4.0 };
     let integer_and_float : Point<i32,f32> = Point { x: 5, y: 4.0 };
     let val1:i32 = *both_integer.x();
-    let val2:i32 = integer_and_float.xxx();// both_integer.xxx(); // QUIZ: can i call this:
+    let val2:i32 = integer_and_float.xxx();
+    // both_integer.xxx(); // QUIZ: can i call this:
     // let val3 = both_float.xx();
 
     println!("val1 and val2: {} and {}", val1, val2);
@@ -115,7 +121,7 @@ fn main() {
  */
 
 /* ======== Traits =========
-   ====================== */
+   ========================= */
 // A *trait* tells the Rust compiler about functionality
 // a particular **type** has and can share with other types.
 // - traits define shared behavior in an abstract way.
@@ -123,8 +129,10 @@ fn main() {
 // for example:
 
 // kind of like interfaces, but not really. Closer to Haskell ADT
-// Kinda existential types:
+// Kinda existential types: "existentially-quantified type”, is a type that intuitively represents “any type satisfying a given property"
 //  https://varkor.github.io/blog/2018/07/03/existential-types-in-rust.html
+// the universal quantifier ∀ is scoped over the entire type — everything after the ∀ —
+// whereas the existential quantifier ∃ is scoped over just the immediate trait bound
 
 // Imagine we are working on many many different type of numbers,
 // and we want to implement a `the_large_one()` function
@@ -137,8 +145,10 @@ fn the_large_one_i16(x: i16, y:i16) -> i16 {if x > y {x} else {y}}
 // As a smart coder, we cannot let it happen.
 // So, we define a generic type `T`, and tell rust to do the rest for us.
 
+// Q: why should this code not compile?
 // fn the_large_one_gen<T>(x: T, y: T) -> T {if x > y {x} else {y}}
 
+//
 // However, rust will complain because not every data type can be compared.
 // DNC: error[E0369]: binary operation `>` cannot be applied to type `T`
 // Traits are a way to address this (and other) issues,
@@ -199,7 +209,7 @@ pub struct NewsArticle {
 // And here is the implementation of the Summary Trait for NewsArticle
 // it uses the same keword we've seen for adding behaviour to a struct
 // in this case we are specifying what behaviour to add precisely: the behaviour dictated by the Trait
-// QUIZ: Will this typecheck:
+// QUIZ: Will this compile:
 // impl Summary for NewsArticle {
 //
 // }
@@ -306,13 +316,20 @@ pub fn example_notify(){
         author: "Patrignani".to_string(),
         content: "there is a wasp in my attic".to_string()
     };
-    // notify_fn2(&t, &n);
+    notify_fn2(&t, &n);
     // notify_bound2(&t, &n);
     //
     // DNC: error[E0277]: `Tweet` doesn't implement `std::fmt::Display`
 }
 
 impl Display for Tweet {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        format!("");
+        Ok(())
+    }
+}
+
+impl Display for NewsArticle {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         format!("");
         Ok(())
@@ -354,6 +371,8 @@ fn some_function_where<T, U>(t: &T, u: &U) -> i32
 //     }
 // }
 
+// start here
+
 // DNC: error[E0782]: trait objects must include the `dyn` keyword
 // -> add `dyn` :  https://doc.rust-lang.org/std/keyword.dyn.html
 // DNC: error[E0038]: the trait `Summary` cannot be made into an object
@@ -390,7 +409,6 @@ fn some_function_where<T, U>(t: &T, u: &U) -> i32
 // and opt-out bounds (e.g. ?Sized) are not allowed.
 // Furthermore, paths to traits may be parenthesized.
 
-//START HERE
 
 // Due to the opaqueness of which concrete type the value is of,
 // trait objects are dynamically sized types.
@@ -510,6 +528,7 @@ impl<T> Pair<T> {
 }
 // this function only exists for those pairs of objects that implement both Display and PartialOrd
 impl<T: Display + PartialOrd> Pair<T> {
+
     fn cmp_display(&self) {
         if self.x >= self.y {
             println!("The largest member is x = {}", self.x);
@@ -520,6 +539,7 @@ impl<T: Display + PartialOrd> Pair<T> {
 }
 // compare and contrast: what can we do with something of type T in the first
 // impl, and what can we do in the second one with the same somethings?
+
 
 /* ==== Deriving Traits ====
    ====================== */
@@ -555,8 +575,9 @@ struct Seconds(i32);
 
 fn example_derivable() {
     let _one_second = Seconds(1);
-    // QUIZ: why do these two not compile?
+    // QUIZ: why do this not compile?
     // println!("One second looks like: {:?}", _one_second);
+    // QUIZ: why do this not compile?
     // let _this_is_true = (_one_second == _one_second);
 
     // DNC: `Seconds` can't be printed; it doesn't implement the `Debug` trait
@@ -614,35 +635,52 @@ pub fn test () {
     let n = st.f();
 }
 
-//start here
-// pub fn testtt( a : Box<dyn T >) -> T::Item{
-//     todo!();
+// what is the difference between a generic struct and one
+// that defines its type alias?
+
+//
+// the control of who instantiates the type: caller/callee
+
+
+// pub fn testtt(a : Box<dyn T<Item = i32>>) -> ST{
+//     return 3;
 // }
 
 /* ===== Super Traits ======
    ====================== */
 // Rust doesn't have "inheritance", but you can define a
-// trait as being a superset of another trait. For example:
+// trait as being a superset of another trait.
+//
+//  what is the difference between trait inheritance and class inheritance
+
+//
+// traits only extend the behaviour
+// classes also extend the shape
+// For example:
 trait Person {
     fn name(&self) -> &String;
 }
-// Person is a supertrait of Student.
+/*// Person is a supertrait of Student.
 // Implementing Student requires you to also impl Person.
 // so a Student 'is a' Person
+*/
 trait Student: Person {
     fn university(&self) -> String;
 }
-
 trait Programmer {
     fn fav_language(&self) -> String;
+    fn git_username(&self) -> String;
 }
+/*
 // CompSciStudent (computer science student) is a subtrait
 // of both Programmer and Student. Implementing CompSciStudent
 // requires you to impl both supertraits
 // and their supertraits
+*/
 trait CompSciStudent: Programmer + Student {
     fn git_username(&self) -> String;
 }
+// why can we have this "multiple inheritance" ?
 
 // This function uses all the methods available as
 // something that implements CompSciStudent
@@ -652,7 +690,8 @@ fn comp_sci_student_greeting(student: &impl CompSciStudent) -> String {
         student.name(),
         student.university(),
         student.fav_language(),
-        student.git_username()
+        Programmer::git_username(student)
+        // student.git_username()
     )
 }
 
@@ -670,6 +709,9 @@ impl CompSciStudent for Entity{
 impl Programmer for Entity {
     fn fav_language(&self) -> String {
         String::from("Rust!")
+    }
+    fn git_username(&self) -> String {
+        String::from("aswd")
     }
 }
 impl Student for Entity {
@@ -719,3 +761,20 @@ pub fn example_supertraits(){
 // Rust instead uses generics to abstract over different possible types
 // and trait bounds to impose constraints on what those types must provide.
 // This is sometimes called *bounded parametric polymorphism*.
+
+
+trait Descrivibile {
+    fn descrivi(&self) -> String;
+}
+
+fn stampa1<T: Descrivibile>(item: Box<T>) {
+    println!("{}", item.descrivi());
+}
+
+fn stampa2(item: Box<impl Descrivibile>) {
+    println!("{}", item.descrivi());
+}
+
+fn stampa3(item: Box<dyn Descrivibile>) {
+    println!("{}", item.descrivi());
+}

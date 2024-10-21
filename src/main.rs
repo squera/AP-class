@@ -17,7 +17,7 @@ use basedir::c04_structs as c4;
 use basedir::c05_modules as c5;
 use basedir::c06_testing as c6;
 use basedir::c07_lifetimes as c7;
-use basedir::c09_maps as cm;
+use basedir::c13_maps as cm;
 use basedir::c08_traits as c9;
 use basedir::c10_OOP as c10;
 use basedir::c11_heap as c11;
@@ -84,7 +84,8 @@ pub fn main() {
 
     //
     // // open c08_lifetimes
-    c7::lifetime_test();
+    // c7::lifetime_test();
+    c7::main();
     //
     // // c09_traitspoly
     // c9::struct_generic();
