@@ -157,15 +157,15 @@ pub fn example_box_long() {
 
 enum List {
     // comment, uncomment
-    Cons(i32, List),
-    // Cons(i32, Box<List>),
+    // Cons(i32, List),
+    Cons(i32, Box<List>),
     Nil,
 }
 // Then we can create our list as shown below.
 use self::List::{Cons,Nil};
 pub fn recursivetypes(){
-    let list = Cons(1, Cons(2, Cons(3, Nil)));
-    // let list = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
+    // let list = Cons(1, Cons(2, Cons(3, Nil)));
+    let list = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
 
 }
 // DNC: error[E0072]: recursive type `List` has infinite size
@@ -234,15 +234,15 @@ pub fn example_smart1() {
     // uncomment the IMPL below, now it works
 }
 
-// impl<T> Deref for MyBox<T> {
-//     type Target = T;
-//     // type Target = i32;
-//
-//     fn deref(&self) -> &Self::Target {
-//         &self.el
-//         // &self.idx
-//     }
-// }
+impl<T> Deref for MyBox<T> {
+    type Target = T;
+    // type Target = i32;
+
+    fn deref(&self) -> &Self::Target {
+        &self.el
+        // &self.idx
+    }
+}
 //Without the Deref trait, the compiler can only dereference & references.
 // The deref method gives the compiler the ability to take a value
 // of any type that implements Deref and call the deref method
@@ -320,6 +320,8 @@ pub fn example_drop() {
 //   When a pooled connection is dropped, you want to return the connection
 //   to the pool so that it can be reused later.
 // - You are logging information.
+
+// start here 22 oct
 
 /* ========== Rc ===========
    ========================= */
@@ -507,14 +509,12 @@ pub fn arc() {
             println!("count after creating apple in a thread: {}", Arc::strong_count(&apple));
             // What's going on? See:
             //      https://doc.rust-lang.org/std/sync/struct.Arc.html#method.strong_count
-
-            // let ten_millis = Duration::from_millis(100);
-            // sleep(ten_millis);
         });
         // if we wait for the join, then the count always goes to 2
         // comment to see the numbers changing
-        tjh.join();
+        // tjh.join();
     }
+
 }
 
 /*
@@ -530,8 +530,8 @@ struct NaiveRc<T> {
 
 impl<T: Copy> Clone for NaiveRc<T> {
     fn clone(&self) -> Self {
-        // QUIZ: does this code compile?
-        // Y | N
+        // QUIZ: why does this code not compile?
+        // mutability | lifetime | ownership |
         //self.reference_count += 1;
 
 
@@ -842,8 +842,6 @@ pub mod workingtests {
         assert_eq!(mock_messenger.sent_messages.borrow().len(), 1);
     }
 
-    // start here
-
     // When creating immutable and mutable references,
     // we use the & and &mut syntax, respectively.
     // With `RefCell<T>`, we use the borrow and borrow_mut methods,
@@ -928,8 +926,8 @@ pub mod rc_plus_refcell {
   |   b ----> [ | , |]
   |             |----------------------------> { 3 }
   |
-  |-------------|
-                |   |--------------> { 4 }
+  |-----------------|
+                |---+----------> { 4 }
       c ----> [ | , |]
 
          */

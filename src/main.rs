@@ -85,7 +85,7 @@ pub fn main() {
     //
     // // open c08_lifetimes
     // c7::lifetime_test();
-    c7::main();
+    // c7::main();
     //
     // // c09_traitspoly
     // c9::struct_generic();
@@ -108,7 +108,7 @@ pub fn main() {
     // c11::example_drop();
     // c11::example_rc();
     // c11::implitictderef();
-    // c11::arc();
+    c11::arc();
     // c11::refcell_usage();
     // c11::refcell_usage_2();
     // c11::tests::it_sends_an_over_75_percent_warning_message();
