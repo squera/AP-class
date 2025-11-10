@@ -18,6 +18,7 @@ use classes::c08_lifetimes as c8;
 use classes::c09_traits as c9;
 use classes::c10_OOP as c10;
 use classes::c11_heap as c11;
+use classes::c12_fp as c12;
 pub fn main() {
     // // // from c01_basic
     // c1::var_ass_mut();
@@ -95,17 +96,18 @@ pub fn main() {
     // c11::refcell_usage();
     // c11::refcell_usage_2();
     // c11::tests::it_sends_an_over_75_percent_warning_message();
-    c11::workingtests::it_sends_an_over_75_percent_warning_message();
+    // c11::workingtests::it_sends_an_over_75_percent_warning_message();
     // c11::rc_plus_refcell::examplepcrefcell();
     // c11::overflow::exampleoverflow();
     // c11::graphexample();
+    // c11::par::arcmutex();
+    // c11::par::arcrwlock();
     // c11::cellexamplee();
     // c11::rcwithcellexample();
-    // c11::par::arcmutex();
 
     // // c12_fp
     // c12::closures::closuresexample();
-    // c12::closures::capturingexample();
+    c12::closures::capturingexample();
     // c12::closures::fntypes();
     // c12::closures::closures_output();
     // c12::closures::fprules();

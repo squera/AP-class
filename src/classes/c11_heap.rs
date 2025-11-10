@@ -480,7 +480,7 @@ pub mod overflow {
         // QUIZ: What will happen?
         // println!("a next item = {:?}", a.head());
         // and here?
-        // println!("a next item = {:?}", a.tail());
+        println!("a next item = {:?}", a.tail());
     }
 }
 
@@ -496,8 +496,8 @@ struct _Node<T> {
     inner_value: T,
     adjacent: Vec<NodeRef<T>>,
 }
-type NodeRef<T> = Rc<RefCell<_Node<T>>>;
-
+type NodeRef<T> =
+Rc<RefCell<_Node<T>>>;
 impl<T> Node<T> {
     // Creates a new node with no edges.
     fn new(inner: T) -> Node<T> {
@@ -545,16 +545,55 @@ pub fn graphexample() {
     }
 }
 
+/* ===== Mutex / RWLock =======
+   ========================= */
+pub mod par{
+    use std::cell::RefCell;
+    use std::sync::{Arc, Mutex, RwLock};
+    use std::thread;
+
+    pub fn arcmutex() {
+        // let counter = Arc::new(RefCell::new(0));
+        let counter = Arc::new(Mutex::new(0));
+        let mut handles = vec![];
+
+        for _ in 0..10 {
+            let counter = Arc::clone(&counter);
+            let handle = thread::spawn(move || {
+                let mut num = counter.lock().unwrap();
+                println!("I am thread number {}",num);
+                *num += 1;
+            });
+            handles.push(handle);
+        }
+        for handle in handles {
+            handle.join().unwrap();
+        }
+        println!("Result: {}", *counter.lock().unwrap());
+    }
+    pub fn arcrwlock() {
+        let counter = Arc::new(RwLock::new(0));
+        let mut handles = vec![];
+
+        for _ in 0..10 {
+            let counter = Arc::clone(&counter);
+            let handle = thread::spawn(move || {
+                let mut num = counter.write().unwrap();
+                println!("I am thread number {}",num);
+                *num += 1;
+            });
+            handles.push(handle);
+        }
+        for handle in handles {
+            handle.join().unwrap();
+        }
+        println!("Result: {}", *counter.read().unwrap());
+    }
+}
+
+
 /* ========= Cell ==========
    ========================= */
-// Finally, let's mention Cell too, which can be also used in place of RefCell for interior mutability
-// The most obvious difference between Cell and RefCell is that
-//      RefCell makes run-time borrow checks, while Cell does not.
-// Cell is quite simple to use:
-//      you can read and write a Cell’s inner value by calling get or set on it.
-// Since there are no compile-time or run-time checks,
-// you do have to be careful to avoid some bugs the borrow checker would stop you from writing,
-// such as accidentally overwriting the wrapped value:
 use std::cell::Cell;
 use std::time::Duration;
 
@@ -610,28 +649,3 @@ pub fn rcwithcellexample() {
     println!("references after cloning2: {:?}", wrapped_clone2.references());
 }
 
-pub mod par{
-    use std::cell::RefCell;
-    use std::sync::{Arc, Mutex};
-    use std::thread;
-
-    pub fn arcmutex() {
-        // let counter = Arc::new(RefCell::new(0));
-        let counter = Arc::new(Mutex::new(0));
-        let mut handles = vec![];
-
-        for _ in 0..10 {
-            let counter = Arc::clone(&counter);
-            let handle = thread::spawn(move || {
-                let mut num = counter.lock().unwrap();
-                println!("I am thread number {}",num);
-                *num += 1;
-            });
-            handles.push(handle);
-        }
-        for handle in handles {
-            handle.join().unwrap();
-        }
-        println!("Result: {}", *counter.lock().unwrap());
-    }
-}
